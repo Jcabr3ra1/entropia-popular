@@ -1,0 +1,190 @@
+---
+import { waLink, mensajesWa } from '../data/sitio';
+import { getImage } from 'astro:assets';
+import Icon from './Icon.astro';
+import posterSendero from '../assets/fotos/poster-sendero.jpg';
+import posterVivero from '../assets/fotos/poster-vivero.jpg';
+
+const [posterS, posterV] = await Promise.all([
+  getImage({ src: posterSendero, width: 540, format: 'webp', quality: 70 }),
+  getImage({ src: posterVivero, width: 540, format: 'webp', quality: 70 }),
+]);
+
+const videos = [
+  {
+    id: 'sendero',
+    label: 'El sendero',
+    duracion: '1:03',
+    description: 'Paisaje, fauna y voces del Bosque Seco Tropical, contados desde La Cañada.',
+    src: '/videos/sendero-bosque-seco.mp4',
+    poster: posterS.src,
+  },
+  {
+    id: 'vivero',
+    label: 'El vivero',
+    duracion: '0:22',
+    description: 'Una jornada de siembra con las familias que cuidan el vivero comunitario.',
+    src: '/videos/vivero-siembra.mp4',
+    poster: posterV.src,
+  },
+];
+---
+
+<section class="reels section" id="galeria" aria-labelledby="galeria-title">
+  <div class="container reels__layout">
+    <div class="reels__intro">
+      <span class="kicker reveal">Así se vive el lugar</span>
+      <h2 class="title reels__title reveal" id="galeria-title">Mire el bosque antes de <span class="scribble">venir</span></h2>
+      <p class="reels__lead reveal">Dos momentos reales de La Cañada, grabados por la comunidad: el sendero que caminamos y las plantas que cuidamos.</p>
+      <a class="btn btn--primary reveal" href={waLink(mensajesWa.pasadia)} target="_blank" rel="noopener" data-asistente="pasadia">Planear mi visita</a>
+      <p class="reels__note reveal">Los videos tienen sonido y solo se descargan cuando usted los reproduce.</p>
+      <p class="reels__swipe" aria-hidden="true">Deslice para ver los dos videos <span>→</span></p>
+    </div>
+
+    <div class="reels__track" data-reels>
+      {videos.map((video) => (
+        <article class:list={['reel', `reel--${video.id}`, 'reveal']} aria-labelledby={`reel-title-${video.id}`}>
+          <div class="reel__frame" data-reel>
+            <video controls playsinline preload="none" poster={video.poster} width="540" height="960" aria-describedby={`reel-desc-${video.id}`} data-reel-video>
+              <source src={video.src} type="video/mp4" />
+              Su navegador no puede reproducir este video. <a href={video.src}>Abrir el archivo de video</a>.
+            </video>
+            <div class="reel__overlay" aria-hidden="true"></div>
+            <div class="reel__leyenda">
+              <h3 id={`reel-title-${video.id}`}>{video.label}</h3>
+              <p id={`reel-desc-${video.id}`}>{video.description}</p>
+            </div>
+            <button class="reel__play" type="button" data-reel-play hidden>
+              <span class="reel__play-icon"><Icon name="play" size={20} /></span>
+              <span class="reel__play-text">Ver video <small>{video.duracion}</small></span>
+              <span class="sr-only">: {video.label}</span>
+            </button>
+          </div>
+          <p class="reel__error" data-reel-error hidden>No se pudo reproducir aquí. <a href={video.src} target="_blank" rel="noopener">Abrir el video en otra pestaña</a>.</p>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<script>
+  // Mejora progresiva: sin JavaScript los videos conservan sus controles nativos.
+  const frames = Array.from(document.querySelectorAll<HTMLElement>('[data-reel]'));
+  const videos = frames.map((frame) => frame.querySelector<HTMLVideoElement>('[data-reel-video]')!);
+
+  frames.forEach((frame, index) => {
+    const video = videos[index];
+    const play = frame.querySelector<HTMLButtonElement>('[data-reel-play]');
+    const error = frame.parentElement?.querySelector<HTMLElement>('[data-reel-error]');
+    if (!video || !play) return;
+
+    video.controls = false;
+    video.tabIndex = -1;
+    play.hidden = false;
+
+    const start = async () => {
+      videos.forEach((other) => { if (other !== video) other.pause(); });
+      video.controls = true;
+      video.tabIndex = 0;
+      frame.classList.add('is-active');
+      try {
+        await video.play();
+        video.focus({ preventScroll: true });
+      } catch {
+        if (error) error.hidden = false;
+      }
+    };
+
+    play.addEventListener('click', start);
+    video.addEventListener('play', () => videos.forEach((other) => { if (other !== video) other.pause(); }));
+    video.addEventListener('error', () => { if (error) error.hidden = false; }, true);
+  });
+</script>
+
+<style>
+  .reels { position: relative; overflow: hidden; background: var(--cream); padding-top: 1.5rem; }
+
+  .reels__layout { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: clamp(2.5rem, 6vw, 6rem); align-items: start; }
+
+  /* Columna fija mientras pasan los videos */
+  .reels__intro { position: sticky; top: 2rem; display: grid; justify-items: start; }
+  .reels__title { max-width: 12ch; margin: 0 0 1.5rem; }
+  .reels__lead { max-width: 40ch; margin: 0 0 2rem; font-size: clamp(1rem, 1.3vw, 1.08rem); }
+  .reels__note { max-width: 36ch; margin: 1.25rem 0 0; color: var(--text-soft); font-size: .85rem; }
+  .reels__swipe { display: none; }
+
+  .reels__track { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(.75rem, 1.4vw, 1.25rem); align-items: start; }
+  /* Escalón como el tríptico */
+  .reel--vivero { margin-top: clamp(3rem, 8vw, 6rem); }
+
+  .reel__frame {
+    position: relative;
+    aspect-ratio: 9 / 16;
+    overflow: hidden;
+    border-radius: clamp(1rem, 2vw, 1.9rem);
+    background: var(--ink);
+    box-shadow: var(--shadow-card);
+  }
+  .reel__frame video { width: 100%; height: 100%; object-fit: cover; background: var(--ink); }
+  .reel__frame.is-active video { object-fit: contain; background: #000; }
+
+  .reel__overlay { position: absolute; inset: 0; background: linear-gradient(0deg, rgba(23, 18, 24, .88) 0%, rgba(23, 18, 24, .35) 38%, transparent 60%); pointer-events: none; transition: opacity .3s ease; }
+
+  .reel__leyenda { position: absolute; left: 1.25rem; right: 1.25rem; bottom: 5.25rem; color: var(--white); pointer-events: none; transition: opacity .3s ease; }
+  .reel__leyenda h3 { margin: 0 0 .35rem; color: var(--white); font: 700 clamp(1.5rem, 2.4vw, 2rem)/1.1 var(--font-display); }
+  .reel__leyenda p { margin: 0; color: rgba(255, 255, 255, .88); font-size: .88rem; line-height: 1.5; }
+
+  .reel__play {
+    position: absolute;
+    left: 1.25rem;
+    bottom: 1.25rem;
+    min-height: 48px;
+    display: inline-flex;
+    align-items: center;
+    gap: .7rem;
+    padding: .35rem 1rem .35rem .35rem;
+    border: 0;
+    border-radius: 999px;
+    color: var(--ink);
+    background: var(--white);
+    font-size: .88rem;
+    font-weight: 600;
+    transition: background-color .2s ease;
+  }
+  .reel__play-icon { width: 2.4rem; height: 2.4rem; display: grid; place-items: center; border-radius: 50%; color: var(--white); background: var(--red); transition: transform .25s ease; }
+  .reel__play-icon :global(svg) { margin-left: 2px; fill: currentColor; }
+  .reel__play-text { display: inline-flex; align-items: baseline; gap: .6rem; }
+  .reel__play-text small { color: var(--text-soft); font-size: .8rem; font-variant-numeric: tabular-nums; }
+  .reel__play:hover .reel__play-icon { transform: scale(1.08); }
+  .reel__play:focus-visible { outline: 3px solid var(--white); outline-offset: 3px; }
+  .reel__frame.is-active .reel__overlay, .reel__frame.is-active .reel__leyenda, .reel__frame.is-active .reel__play { opacity: 0; visibility: hidden; pointer-events: none; }
+
+  .reel__error { margin: .8rem 0 0; font-size: .85rem; }
+  .reel__error a { color: var(--red-deep); }
+
+  @media (max-width: 960px) {
+    .reels__layout { grid-template-columns: 1fr; gap: 2.5rem; }
+    .reels__intro { position: static; }
+  }
+  @media (max-width: 640px) {
+    .reels__track {
+      display: flex;
+      gap: 1rem;
+      margin-inline: -1rem;
+      padding: 0 1rem 1rem;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-padding-inline: 1rem;
+      overscroll-behavior-inline: contain;
+      scrollbar-width: none;
+    }
+    .reels__track::-webkit-scrollbar { display: none; }
+    .reel { flex: 0 0 82%; scroll-snap-align: start; }
+    .reel--vivero { margin-top: 0; }
+    .reels__swipe { display: flex; gap: .4rem; margin: 1.25rem 0 0; color: var(--red-deep); font-size: .85rem; font-weight: 600; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .reel__play-icon { transition: none; }
+    .reel__play:hover .reel__play-icon { transform: none; }
+  }
+</style>

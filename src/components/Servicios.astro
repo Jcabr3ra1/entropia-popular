@@ -1,0 +1,150 @@
+---
+import { Image } from 'astro:assets';
+import Icon from './Icon.astro';
+import sendero from '../assets/fotos/poster-sendero.jpg';
+import vivero from '../assets/fotos/frutales.jpeg';
+import { formatoPesos, frutales, nativasEnPropagacion, pasadia, precios, waLink, mensajesWa } from '../data/sitio';
+
+// Dos caminos con foto real: continúa el lenguaje de las franjas del hero.
+const caminos = [
+  {
+    clave: 'sendero',
+    etiqueta: 'Sendero',
+    titulo: 'Caminar el bosque',
+    texto: 'Pasadía guiado por gente de la vereda para observar aves y conocer el Bosque Seco Tropical.',
+    datos: ['2 h 30 min', `Hasta ${pasadia.capacidadMaxima} personas`, `${formatoPesos(precios.pasadiaPorPersona)} por persona`],
+    foto: sendero,
+    alt: 'Paisaje de montañas secas y árboles bajo un cielo con nubes, en la vereda La Cañada.',
+    accion: { texto: 'Planear mi visita', href: waLink(mensajesWa.pasadia) },
+  },
+  {
+    clave: 'vivero',
+    etiqueta: 'Vivero',
+    titulo: 'Sembrar con nosotros',
+    texto: 'Árboles nativos y frutales propagados con semilla del territorio, con asesoría y seguimiento después de la siembra.',
+    datos: [`${nativasEnPropagacion.length} nativas`, `${frutales.length} frutales`, `Desde ${formatoPesos(precios.plantula)}`],
+    foto: vivero,
+    alt: 'Integrantes de la comunidad recorren las hileras de plántulas bajo la malla de sombra del vivero.',
+    accion: { texto: 'Pedir plantas', href: waLink(mensajesWa.plantas) },
+  },
+];
+---
+
+<section class="servicios section" id="servicios" aria-labelledby="servicios-title">
+  <div class="container">
+    <div class="servicios__head reveal">
+      <div>
+        <span class="kicker">Lo que hacemos</span>
+        <h2 class="title" id="servicios-title">Dos caminos para conocer el bosque</h2>
+      </div>
+      <p>Venga a caminar el sendero con la comunidad o siembre el bosque en su tierra con plántulas nativas y frutales cultivadas aquí mismo.</p>
+    </div>
+
+    <ul class="caminos">
+      {caminos.map((c) => (
+        <li class:list={['camino', `camino--${c.clave}`, 'reveal']}>
+          <Image src={c.foto} widths={[480, 720, 960]} sizes="(max-width: 800px) 100vw, 45vw" alt={c.alt} quality={66} class="camino__foto" />
+          <div class="camino__cuerpo">
+            <span class="camino__etiqueta">{c.etiqueta}</span>
+            <h3>{c.titulo}</h3>
+            <p>{c.texto}</p>
+            <ul class="camino__datos" aria-label={`Datos de ${c.etiqueta.toLowerCase()}`}>
+              {c.datos.map((d) => <li>{d}</li>)}
+            </ul>
+            <div class="camino__acciones">
+              <a class="btn btn--primary" href={c.accion.href} target="_blank" rel="noopener" data-asistente={c.clave === 'sendero' ? 'pasadia' : 'plantas'}>{c.accion.texto}</a>
+              <a class="camino__link" href="#ofrecemos" data-tab-target={c.clave}>Ver detalles<span class="sr-only"> de {c.etiqueta.toLowerCase()}</span> <Icon name="arrow" size={16} /></a>
+            </div>
+          </div>
+        </li>
+      ))}
+    </ul>
+
+    <p class="servicios__ayuda reveal">
+      <svg class="servicios__ayuda-icono" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+        <!-- Sendero punteado que llega a una plántula: del pasadía al vivero -->
+        <path d="M5 41c5 0 8-3 10.5-6.5S21 29 26 29" fill="none" stroke="#75288b" stroke-width="3" stroke-linecap="round" stroke-dasharray="1.5 5" />
+        <path d="M33 40V21" fill="none" stroke="#211b22" stroke-width="2.6" stroke-linecap="round" />
+        <path d="M33 27c-8.5 0-12.5-4.6-12.5-12 8 0 12.5 4.3 12.5 12Z" fill="#75288b" />
+        <path d="M33 22c0-8 4.3-12.5 12-12.5 0 8-4.6 12.5-12 12.5Z" fill="#d10818" />
+        <path d="M25.5 41.5h15" fill="none" stroke="#211b22" stroke-width="2.6" stroke-linecap="round" />
+      </svg>
+      <span>El recorrido del pasadía pasa por el vivero: en una misma visita conoce los dos.</span>
+    </p>
+  </div>
+</section>
+
+<style>
+  .servicios { position: relative; overflow-x: clip; background: var(--white); isolation: isolate; padding-top: .25rem; padding-bottom: calc(clamp(4.5rem, 8vw, 7.5rem) + 2rem); }
+  /* Cabecera en dos columnas, como el hero: título a la izquierda, frase a la derecha */
+  .servicios__head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 23rem); align-items: end; gap: 1.5rem clamp(2rem, 6vw, 6rem); margin-bottom: clamp(2rem, 4vw, 3rem); }
+  .servicios__head .title { max-width: 18ch; }
+  .servicios__head p { margin: 0; font-size: 1rem; line-height: 1.65; }
+
+  /* Bloque cálido detrás de la mitad inferior de las fotos: la sección deja de ser blanco puro */
+  .servicios .container { position: relative; }
+  .caminos { position: relative; }
+  .caminos::before {
+    content: '';
+    position: absolute;
+    inset: 38% calc(-1 * clamp(1rem, 4vw, 3.5rem)) calc(-1 * clamp(3.5rem, 6vw, 5rem));
+    z-index: -1;
+    border-radius: clamp(1.5rem, 3vw, 2.75rem);
+    background:
+      radial-gradient(60% 80% at 15% 100%, rgba(117, 40, 139, .09), transparent 70%),
+      radial-gradient(50% 70% at 90% 20%, rgba(209, 8, 24, .06), transparent 70%),
+      #f8f1f8;
+  }
+
+  /* Ayuda en el hueco que deja el escalón, bajo el sendero */
+  .servicios__ayuda { position: relative; display: flex; flex-wrap: wrap; align-items: center; gap: .25rem 1rem; width: calc(50% - .6rem); margin: clamp(-4rem, -5vw, -2rem) 0 0; padding-top: 1.25rem; font-size: .95rem; }
+  .servicios__ayuda { flex-wrap: nowrap; align-items: flex-start; gap: .75rem; color: var(--ink); font-weight: 500; line-height: 1.55; }
+  .servicios__ayuda { align-items: center; }
+  .servicios__ayuda-icono { width: 3.75rem; height: 3.75rem; flex: 0 0 auto; padding: .3rem; border-radius: 50%; background: var(--white); box-shadow: var(--shadow-soft); }
+
+  .caminos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(.75rem, 1.4vw, 1.25rem); align-items: start; margin: 0; padding: 0; list-style: none; }
+  /* Escalón como en el tríptico: la segunda empieza más abajo */
+  .camino--vivero { margin-top: clamp(2rem, 6vw, 4.5rem); }
+
+  .camino {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    height: clamp(32rem, 72svh, 42rem);
+    display: flex;
+    align-items: flex-end;
+    border-radius: clamp(1rem, 2vw, 1.9rem);
+    color: var(--white);
+    background: var(--ink);
+  }
+  .camino :global(.camino__foto) { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; transition: scale .8s cubic-bezier(.2, .8, .2, 1), filter .5s ease; }
+  .camino::after { content: ''; position: absolute; inset: 0; z-index: -1; background: linear-gradient(0deg, rgba(23, 18, 24, .88) 0%, rgba(23, 18, 24, .45) 42%, transparent 70%); }
+  .camino:hover :global(.camino__foto), .camino:focus-within :global(.camino__foto) { scale: 1.05; }
+  .caminos:has(.camino:hover) .camino:not(:hover) :global(.camino__foto) { filter: saturate(.6) brightness(.8); }
+
+  .camino__cuerpo { width: 100%; padding: clamp(1.5rem, 3vw, 2.5rem); }
+  .camino__etiqueta { display: inline-block; margin-bottom: 1rem; padding: .35rem .8rem; border-radius: 999px; color: var(--ink); background: var(--white); font-size: .75rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+  .camino h3 { margin: 0 0 .6rem; color: var(--white); font: 700 clamp(2rem, 3.6vw, 3.2rem)/1 var(--font-display); letter-spacing: -.03em; }
+  .camino p { max-width: 40ch; margin: 0 0 1.1rem; color: rgba(255, 255, 255, .9); font-size: .98rem; line-height: 1.6; }
+  .camino__datos { display: flex; flex-wrap: wrap; gap: .4rem 0; margin: 0 0 1.5rem; padding: 0; list-style: none; }
+  .camino__datos li { display: flex; align-items: center; color: var(--white); font-size: .9rem; font-weight: 600; }
+  .camino__datos li + li::before { content: ''; width: .3rem; height: .3rem; margin-inline: .75rem; border-radius: 50%; background: var(--red); }
+  .camino__acciones { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem 1.5rem; }
+  .camino__link { min-height: 44px; display: inline-flex; align-items: center; gap: .4rem; color: var(--white); font-weight: 600; text-underline-offset: .3rem; }
+  .camino__link:hover { color: #f4d9fa; }
+  .camino :focus-visible { outline-color: var(--white); }
+
+  @media (max-width: 800px) {
+    .servicios__head { grid-template-columns: 1fr; }
+    .servicios__ayuda { width: auto; margin-top: 1.5rem; padding-top: 0; }
+    .caminos::before { inset: 30% -1rem -10.5rem; }
+    .servicios { padding-bottom: 11rem; }
+    .caminos { grid-template-columns: 1fr; }
+    .camino--vivero { margin-top: 0; }
+    .camino { height: clamp(28rem, 80svh, 34rem); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .camino :global(.camino__foto) { transition: none; }
+    .camino:hover :global(.camino__foto), .camino:focus-within :global(.camino__foto) { scale: 1; }
+  }
+</style>

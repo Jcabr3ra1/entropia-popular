@@ -1,0 +1,547 @@
+---
+import Icon from './Icon.astro';
+import { contacto, formatoPesos, frutales, mensajesWa, nativasEnIncorporacion, nativasEnPropagacion, pasadia, precios, waLink } from '../data/sitio';
+
+// Asistente «Hablemos de su plan». Lo abre cualquier enlace con [data-asistente]
+// (valor: 'pasadia', 'plantas' o vacío para empezar por la elección).
+// Sin JavaScript esos enlaces llevan directo a WhatsApp con un mensaje base.
+const grupos = [
+  { id: 'nativas', titulo: 'Nativas del bosque seco', tipo: 'nativo', especies: nativasEnPropagacion },
+  { id: 'frutales', titulo: 'Frutales', tipo: 'frutal', especies: frutales },
+  { id: 'pronto', titulo: 'Llegando pronto · consultar disponibilidad', tipo: 'nativo-consulta', especies: nativasEnIncorporacion },
+];
+---
+
+<dialog
+  class="asis"
+  aria-labelledby="asis-titulo"
+  data-asis
+  data-whatsapp={contacto.whatsapp}
+  data-whatsapp-visible={contacto.whatsappVisible}
+  data-precio-plantula={precios.plantula}
+  data-precio-pasadia={precios.pasadiaPorPersona}
+  data-max-personas={pasadia.capacidadMaxima}
+>
+  <header class="asis__head">
+    <div class="asis__titulos">
+      <p class="asis__kicker">Hablemos de su plan</p>
+      <h2 id="asis-titulo" data-asis-titulo>¿Qué le gustaría hacer?</h2>
+    </div>
+    <button class="asis__cerrar" type="button" data-asis-cerrar>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="m6 6 12 12M18 6 6 18" /></svg>
+      <span class="sr-only">Cerrar</span>
+    </button>
+    <div class="asis__progreso">
+      <p><span data-asis-paso-num>Paso 1 de 3</span> · <span data-asis-paso-nombre>Qué quiere</span></p>
+      <div class="asis__linea" aria-hidden="true"><span data-asis-linea></span></div>
+    </div>
+  </header>
+
+  <div class="asis__cuerpo" data-asis-cuerpo>
+    <!-- Paso 1: elegir -->
+    <section class="asis__paso" data-paso="1" aria-label="Paso 1: qué quiere hacer">
+      <div class="asis__opciones">
+        <button class="asis__opcion asis__opcion--sendero" type="button" data-elegir="pasadia">
+          <span class="asis__opcion-num" aria-hidden="true">01</span>
+          <span class="asis__opcion-texto">
+            <strong>Caminar el sendero</strong>
+            <small>2 h 30 min · hasta {pasadia.capacidadMaxima} personas · {formatoPesos(precios.pasadiaPorPersona)} por persona</small>
+          </span>
+          <span class="asis__opcion-flecha" aria-hidden="true"><Icon name="arrow" size={22} /></span>
+        </button>
+        <button class="asis__opcion asis__opcion--vivero" type="button" data-elegir="plantas">
+          <span class="asis__opcion-num" aria-hidden="true">02</span>
+          <span class="asis__opcion-texto">
+            <strong>Sembrar con el vivero</strong>
+            <small>{nativasEnPropagacion.length} nativas · {frutales.length} frutales · desde {formatoPesos(precios.plantula)}</small>
+          </span>
+          <span class="asis__opcion-flecha" aria-hidden="true"><Icon name="arrow" size={22} /></span>
+        </button>
+      </div>
+      <p class="asis__pregunta">
+        ¿Solo tiene una pregunta?
+        <a href={waLink(mensajesWa.general)} target="_blank" rel="noopener" data-asis-directo>Escribir directo por WhatsApp<span class="sr-only"> (abre en una pestaña nueva)</span></a>
+      </p>
+    </section>
+
+    <!-- Paso 2: detalles del pasadía -->
+    <section class="asis__paso" data-paso="2" data-detalle="pasadia" aria-label="Paso 2: detalles del pasadía" hidden>
+      <div class="asis__campos-2">
+        <div class="asis__campo">
+          <label for="asis-fecha">Fecha preferida</label>
+          <input id="asis-fecha" type="date" data-asis-fecha />
+        </div>
+        <div class="asis__campo">
+          <label for="asis-fecha-alt">Otra fecha posible <span>(opcional)</span></label>
+          <input id="asis-fecha-alt" type="date" data-asis-fecha-alt />
+        </div>
+      </div>
+      <div class="asis__campo">
+        <span class="asis__etiqueta" id="asis-personas-label">¿Cuántas personas vienen?</span>
+        <div class="contador contador--grande" role="group" aria-labelledby="asis-personas-label">
+          <button type="button" data-personas="-1"><span aria-hidden="true">−</span><span class="sr-only">Una persona menos</span></button>
+          <input type="number" inputmode="numeric" min="1" max={pasadia.capacidadMaxima} value="2" aria-labelledby="asis-personas-label" data-asis-personas />
+          <button type="button" data-personas="1"><span aria-hidden="true">+</span><span class="sr-only">Una persona más</span></button>
+        </div>
+        <p class="asis__ayuda">Máximo {pasadia.capacidadMaxima} personas por salida. Para grupos más grandes, escríbanos.</p>
+      </div>
+      <p class="asis__referencia" data-asis-ref-pasadia aria-live="polite"></p>
+    </section>
+
+    <!-- Paso 2: catálogo de plantas -->
+    <section class="asis__paso" data-paso="2" data-detalle="plantas" aria-label="Paso 2: elija sus plantas" hidden>
+      <div class="asis__campo">
+        <label for="asis-buscar">Buscar especie</label>
+        <input id="asis-buscar" type="search" placeholder="Ej.: guayacán, limón…" autocomplete="off" data-asis-buscar />
+      </div>
+      {grupos.map((grupo) => (
+        <div class="catalogo-asis" data-grupo>
+          <h3>{grupo.titulo}</h3>
+          <ul>
+            {grupo.especies.map((especie) => (
+              <li class="planta" data-planta={especie} data-tipo={grupo.tipo}>
+                <span class="planta__nombre" id={`pl-${especie.replace(/\s+/g, '-')}`}>{especie}</span>
+                <div class="contador" role="group" aria-labelledby={`pl-${especie.replace(/\s+/g, '-')}`}>
+                  <button type="button" data-paso-cantidad="-1"><span aria-hidden="true">−</span><span class="sr-only">Una menos de {especie}</span></button>
+                  <input type="number" inputmode="numeric" min="0" step="1" value="0" aria-label={`Cantidad de ${especie}`} data-cantidad />
+                  <button type="button" data-paso-cantidad="1"><span aria-hidden="true">+</span><span class="sr-only">Una más de {especie}</span></button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+      <p class="asis__vacio" data-asis-sin-resultados hidden>No encontramos esa especie. Puede pedirla en el comentario del paso siguiente.</p>
+    </section>
+
+    <!-- Paso 3: revisar y enviar -->
+    <section class="asis__paso" data-paso="3" aria-label="Paso 3: revisar y enviar" hidden>
+      <div class="resumen">
+        <div class="resumen__fila">
+          <div><span>Quiere</span><strong data-asis-res-modo></strong></div>
+          <button type="button" data-ir="1">Cambiar</button>
+        </div>
+        <div class="resumen__fila">
+          <div><span>Detalles</span><ul data-asis-res-detalle></ul></div>
+          <button type="button" data-ir="2">Cambiar</button>
+        </div>
+      </div>
+      <div class="asis__campo" data-solo="plantas">
+        <label for="asis-lugar">Municipio o lugar de entrega <span>(opcional)</span></label>
+        <input id="asis-lugar" type="text" autocomplete="address-level2" maxlength="120" data-asis-lugar />
+      </div>
+      <div class="asis__campo">
+        <label for="asis-nombre">Su nombre <span>(opcional)</span></label>
+        <input id="asis-nombre" type="text" autocomplete="name" maxlength="80" data-asis-nombre />
+      </div>
+      <div class="asis__campo">
+        <label for="asis-nota">Comentario <span>(opcional)</span></label>
+        <textarea id="asis-nota" rows="2" maxlength="300" data-asis-nota></textarea>
+      </div>
+    </section>
+  </div>
+
+  <footer class="asis__pie">
+    <p class="asis__error" id="asis-error" role="alert" data-asis-error></p>
+    <p class="asis__barra" data-asis-barra aria-live="polite"></p>
+    <div class="asis__acciones">
+      <button class="asis__atras" type="button" data-asis-atras>Atrás</button>
+      <button class="btn btn--primary asis__seguir" type="button" data-asis-seguir>Continuar</button>
+      <a class="btn btn--whatsapp asis__enviar" href={waLink(mensajesWa.general)} target="_blank" rel="noopener" data-asis-enviar hidden>
+        Revisar en WhatsApp <Icon name="arrow" size={18} /><span class="sr-only"> (abre en una pestaña nueva)</span>
+      </a>
+    </div>
+    <p class="asis__aviso" data-asis-aviso hidden>Revise y envíe el mensaje en WhatsApp. La comunidad confirmará disponibilidad, valor final y condiciones.</p>
+    <p class="asis__estado" role="status" data-asis-estado></p>
+  </footer>
+</dialog>
+
+<script>
+  type Modo = 'pasadia' | 'plantas';
+  const dialog = document.querySelector<HTMLDialogElement>('[data-asis]');
+  if (dialog && typeof dialog.showModal === 'function') iniciar(dialog);
+
+  function iniciar(dialog: HTMLDialogElement) {
+    const $ = <T extends Element>(s: string) => dialog.querySelector<T>(s)!;
+    const $$ = <T extends Element>(s: string) => Array.from(dialog.querySelectorAll<T>(s));
+    const numero = dialog.dataset.whatsapp ?? '';
+    const numeroVisible = dialog.dataset.whatsappVisible ?? numero;
+    const precioPlantula = Number(dialog.dataset.precioPlantula);
+    const precioPasadia = Number(dialog.dataset.precioPasadia);
+    const maxPersonas = Number(dialog.dataset.maxPersonas);
+    const pesos = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 });
+    const fechaLarga = new Intl.DateTimeFormat('es-CO', { weekday: 'long', day: 'numeric', month: 'long' });
+
+    const titulo = $<HTMLElement>('[data-asis-titulo]');
+    const cuerpo = $<HTMLElement>('[data-asis-cuerpo]');
+    const error = $<HTMLElement>('[data-asis-error]');
+    const barra = $<HTMLElement>('[data-asis-barra]');
+    const estado = $<HTMLElement>('[data-asis-estado]');
+    const atras = $<HTMLButtonElement>('[data-asis-atras]');
+    const seguir = $<HTMLButtonElement>('[data-asis-seguir]');
+    const enviar = $<HTMLAnchorElement>('[data-asis-enviar]');
+    const fecha = $<HTMLInputElement>('[data-asis-fecha]');
+    const fechaAlt = $<HTMLInputElement>('[data-asis-fecha-alt]');
+    const personas = $<HTMLInputElement>('[data-asis-personas]');
+    const buscar = $<HTMLInputElement>('[data-asis-buscar]');
+
+    const hoy = (() => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; })();
+    fecha.min = hoy; fechaAlt.min = hoy;
+
+    let modo: Modo = 'pasadia';
+    let paso = 1;
+    let volverA: HTMLElement | null = null;
+    const titulos = { 1: '¿Qué le gustaría hacer?', 2: { pasadia: 'Elija fecha y grupo', plantas: 'Elija sus plantas' }, 3: 'Revise y envíe' } as const;
+
+    const entero = (v: string) => (/^\d+$/.test(v.trim()) && Number.isSafeInteger(Number(v)) ? Number(v) : NaN);
+    const cantidadValida = (input: HTMLInputElement) => !input.validity.badInput && (input.value.trim() === '' || entero(input.value) >= 0);
+    const limpiarErrores = () => {
+      error.textContent = '';
+      $$<HTMLInputElement>('[aria-invalid]').forEach((input) => {
+        input.removeAttribute('aria-invalid');
+        input.removeAttribute('aria-describedby');
+      });
+    };
+    const errorEn = (input: HTMLInputElement, texto: string) => {
+      error.textContent = texto;
+      input.setAttribute('aria-invalid', 'true');
+      input.setAttribute('aria-describedby', 'asis-error');
+      input.focus();
+      return false;
+    };
+    const formatoFecha = (iso: string) => { const [y, m, d] = iso.split('-').map(Number); return fechaLarga.format(new Date(y, m - 1, d)); };
+    const fechaConAnio = new Intl.DateTimeFormat('es-CO', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    const formatoFechaCompleta = (iso: string) => { const [y, m, d] = iso.split('-').map(Number); return fechaConAnio.format(new Date(y, m - 1, d)); };
+    const plantasElegidas = () => $$<HTMLLIElement>('[data-planta]')
+      .map((li) => ({ especie: li.dataset.planta!, tipo: li.dataset.tipo!, cantidad: entero(li.querySelector<HTMLInputElement>('[data-cantidad]')!.value) || 0 }))
+      .filter((p) => p.cantidad > 0);
+
+    // Mensaje de WhatsApp: tono neutral (no supone el género de quien escribe) y fácil de leer en el celular
+    function mensaje() {
+      const l: string[] = [];
+      const nombre = $<HTMLInputElement>('[data-asis-nombre]').value.trim();
+      const nota = $<HTMLTextAreaElement>('[data-asis-nota]').value.trim();
+      if (modo === 'pasadia') {
+        const n = entero(personas.value);
+        l.push('Hola, Entropia Popular. Me gustaría hacer el pasadía de observación de aves en el sendero.', '');
+        l.push(`• Fecha que prefiero: ${fecha.value ? formatoFechaCompleta(fecha.value) : 'por definir'}`);
+        if (fechaAlt.value) l.push(`• Otra fecha posible: ${formatoFechaCompleta(fechaAlt.value)}`);
+        l.push(`• Número de personas: ${n || 'por definir'}`);
+      } else {
+        const ps = plantasElegidas();
+        const total = ps.reduce((s, p) => s + p.cantidad, 0);
+        l.push('Hola, Entropia Popular. Me gustaría pedir estas plantas del vivero:', '');
+        ps.forEach((p) => l.push(`• ${p.especie}: ${p.cantidad} ${p.cantidad === 1 ? 'plántula' : 'plántulas'}${p.tipo === 'nativo-consulta' ? ' (si está disponible)' : ''}`));
+        l.push('', `Total: ${total} ${total === 1 ? 'plántula' : 'plántulas'}`);
+        const lugar = $<HTMLInputElement>('[data-asis-lugar]').value.trim();
+        if (lugar) l.push(`Entrega en: ${lugar}`);
+      }
+      if (nombre || nota) l.push('');
+      if (nombre) l.push(`Mi nombre: ${nombre}`);
+      if (nota) l.push(`Comentario: ${nota}`);
+      l.push('', modo === 'pasadia'
+        ? (fechaAlt.value ? '¿Tienen cupo en alguna de esas fechas? Quedo pendiente de cómo separarla. ¡Gracias!' : '¿Tienen cupo para esa fecha? Quedo pendiente de cómo separarla. ¡Gracias!')
+        : '¿Me confirman la disponibilidad, el precio final y la fecha de entrega? ¡Gracias!');
+      return l.join('\n');
+    }
+
+    function actualizarBarra() {
+      if (paso === 1) { barra.textContent = ''; return; }
+      if (modo === 'pasadia') {
+        const n = entero(personas.value);
+        barra.textContent = n >= 1 && n <= maxPersonas ? `${n} ${n === 1 ? 'persona' : 'personas'} · referencia ${pesos.format(n * precioPasadia)}` : '';
+      } else {
+        if ($$<HTMLInputElement>('[data-cantidad]').some((input) => !cantidadValida(input))) {
+          barra.textContent = 'Revise las cantidades para calcular el total.';
+          return;
+        }
+        const total = plantasElegidas().reduce((s, p) => s + p.cantidad, 0);
+        barra.textContent = total ? `${total} ${total === 1 ? 'plántula' : 'plántulas'} · referencia ${pesos.format(total * precioPlantula)}${total >= 24 ? ' · pregunte por descuento' : ''}` : 'Aún no ha elegido plantas';
+      }
+    }
+
+    function resumen() {
+      $<HTMLElement>('[data-asis-res-modo]').textContent = modo === 'pasadia' ? 'Caminar el sendero (pasadía de aves)' : 'Pedir plantas del vivero';
+      const ul = $<HTMLUListElement>('[data-asis-res-detalle]');
+      ul.replaceChildren();
+      const add = (t: string) => { const li = document.createElement('li'); li.textContent = t; ul.append(li); };
+      if (modo === 'pasadia') {
+        add(`Fecha: ${formatoFecha(fecha.value)}`);
+        if (fechaAlt.value) add(`Otra fecha: ${formatoFecha(fechaAlt.value)}`);
+        add(`${personas.value} ${Number(personas.value) === 1 ? 'persona' : 'personas'}`);
+      } else {
+        plantasElegidas().forEach((p) => add(`${p.especie}: ${p.cantidad}${p.tipo === 'nativo-consulta' ? ' · consultar disponibilidad' : ''}`));
+      }
+      $$<HTMLElement>('[data-solo="plantas"]').forEach((el) => { el.hidden = modo !== 'plantas'; });
+    }
+
+    function ir(n: number) {
+      paso = n;
+      limpiarErrores();
+      estado.textContent = '';
+      $$<HTMLElement>('[data-paso]').forEach((s) => {
+        s.hidden = Number(s.dataset.paso) !== n || (n === 2 && s.dataset.detalle !== modo);
+      });
+      $<HTMLElement>('[data-asis-paso-num]').textContent = `Paso ${n} de 3`;
+      $<HTMLElement>('[data-asis-paso-nombre]').textContent = ['Qué quiere', 'Detalles', 'Revisar y enviar'][n - 1];
+      $<HTMLElement>('[data-asis-linea]').style.scale = `${n / 3} 1`;
+      const t = titulos[n as 1 | 2 | 3];
+      titulo.textContent = typeof t === 'string' ? t : t[modo];
+      atras.hidden = n === 1;
+      seguir.hidden = n !== 2;
+      enviar.hidden = n !== 3;
+      $<HTMLElement>('[data-asis-aviso]').hidden = n !== 3;
+      if (n === 3) {
+        resumen();
+        enviar.href = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje())}`;
+      }
+      actualizarBarra();
+      cuerpo.scrollTop = 0;
+      // Foco al primer control útil del paso
+      const primero = n === 1 ? dialog.querySelector<HTMLElement>(`[data-elegir="${modo}"]`)
+        : n === 2 ? (modo === 'pasadia' ? fecha : buscar)
+        : $<HTMLElement>(modo === 'plantas' ? '[data-asis-lugar]' : '[data-asis-nombre]');
+      primero?.focus({ preventScroll: true });
+    }
+
+    function validar(): boolean {
+      limpiarErrores();
+      if (modo === 'pasadia') {
+        if (!fecha.value) return errorEn(fecha, 'Elija la fecha que prefiere.');
+        if (fecha.value < hoy) return errorEn(fecha, 'La fecha no puede ser anterior a hoy.');
+        if (fechaAlt.value && fechaAlt.value < hoy) return errorEn(fechaAlt, 'La otra fecha no puede ser anterior a hoy.');
+        const n = entero(personas.value);
+        if (!(n >= 1 && n <= maxPersonas)) return errorEn(personas, `Indique entre 1 y ${maxPersonas} personas.`);
+      } else {
+        const invalida = $$<HTMLInputElement>('[data-cantidad]').find((input) => !cantidadValida(input));
+        if (invalida) {
+          buscar.value = '';
+          buscar.dispatchEvent(new Event('input', { bubbles: true }));
+          const especie = invalida.closest<HTMLElement>('[data-planta]')?.dataset.planta;
+          return errorEn(invalida, `La cantidad de ${especie} debe ser un número entero de 0 en adelante.`);
+        }
+        if (!plantasElegidas().length) {
+          error.textContent = 'Elija al menos una planta con el botón +.'; buscar.focus(); return false;
+        }
+      }
+      return true;
+    }
+
+    function abrir(m?: string) {
+      // Primero se abre (el diálogo nativo mueve el foco) y luego se ubica el paso y su foco
+      if (!dialog.open) dialog.showModal();
+      if (m === 'pasadia' || m === 'plantas') { modo = m; ir(2); } else ir(1);
+      document.documentElement.classList.add('asis-abierto');
+    }
+
+    // Disparadores en toda la página
+    document.addEventListener('click', (event) => {
+      const link = (event.target as Element | null)?.closest<HTMLElement>('[data-asistente]');
+      if (!link || dialog.contains(link)) return;
+      event.preventDefault();
+      volverA = link.closest('[data-menu]') ? document.querySelector<HTMLElement>('[data-nav-toggle]') : link;
+      abrir(link.dataset.asistente);
+    });
+
+    $$<HTMLButtonElement>('[data-elegir]').forEach((b) => b.addEventListener('click', () => { modo = b.dataset.elegir as Modo; ir(2); }));
+    $$<HTMLButtonElement>('[data-ir]').forEach((b) => b.addEventListener('click', () => ir(Number(b.dataset.ir))));
+    atras.addEventListener('click', () => ir(paso - 1));
+    seguir.addEventListener('click', () => { if (validar()) ir(3); });
+    $<HTMLButtonElement>('[data-asis-cerrar]').addEventListener('click', () => dialog.close());
+    dialog.addEventListener('click', (e) => { if (e.target === dialog) dialog.close(); });
+    dialog.addEventListener('close', () => {
+      document.documentElement.classList.remove('asis-abierto');
+      if (volverA?.isConnected && !volverA.closest('[inert]')) volverA.focus({ preventScroll: true });
+    });
+
+    // Contadores
+    $$<HTMLButtonElement>('[data-personas]').forEach((b) => b.addEventListener('click', () => {
+      const n = Math.min(maxPersonas, Math.max(1, (entero(personas.value) || 1) + Number(b.dataset.personas)));
+      personas.value = String(n); limpiarErrores(); actualizarBarra();
+    }));
+    $$<HTMLButtonElement>('[data-paso-cantidad]').forEach((b) => b.addEventListener('click', () => {
+      const li = b.closest<HTMLLIElement>('[data-planta]')!;
+      const input = li.querySelector<HTMLInputElement>('[data-cantidad]')!;
+      const n = Math.max(0, (entero(input.value) || 0) + Number(b.dataset.pasoCantidad));
+      input.value = String(n);
+      li.classList.toggle('is-elegida', n > 0);
+      limpiarErrores();
+      actualizarBarra();
+    }));
+    dialog.addEventListener('input', (e) => {
+      const t = e.target as HTMLElement;
+      limpiarErrores();
+      if (t.matches('[data-cantidad]')) t.closest('[data-planta]')?.classList.toggle('is-elegida', (entero((t as HTMLInputElement).value) || 0) > 0);
+      actualizarBarra();
+      if (paso === 3) enviar.href = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje())}`;
+    });
+
+    // Buscador del catálogo
+    const normal = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+    buscar.addEventListener('input', () => {
+      const q = normal(buscar.value.trim());
+      let visibles = 0;
+      $$<HTMLElement>('[data-grupo]').forEach((g) => {
+        let enGrupo = 0;
+        g.querySelectorAll<HTMLElement>('[data-planta]').forEach((li) => {
+          const ok = !q || normal(li.dataset.planta!).includes(q);
+          li.hidden = !ok; if (ok) enGrupo++;
+        });
+        g.hidden = enGrupo === 0; visibles += enGrupo;
+      });
+      $<HTMLElement>('[data-asis-sin-resultados]').hidden = visibles > 0;
+    });
+
+    // Enviar: se abre WhatsApp con el mensaje armado; nunca decimos que se envió
+    enviar.addEventListener('click', (event) => {
+      if (!validar()) { event.preventDefault(); ir(2); validar(); return; }
+      enviar.href = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje())}`;
+      estado.textContent = `Abrimos WhatsApp con su mensaje. Todavía no se ha enviado: revíselo y pulse enviar allí. Si no se abrió, escríbanos al ${numeroVisible}.`;
+    });
+  }
+</script>
+
+<style>
+  .asis {
+    width: min(100%, 540px);
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+    margin: 0 0 0 auto;
+    padding: 0;
+    border: 0;
+    color: var(--text);
+    background: var(--white);
+    box-shadow: -30px 0 80px -40px rgba(23, 18, 24, .6);
+  }
+  .asis[open] { display: flex; flex-direction: column; animation: asis-entrar .45s cubic-bezier(.2, .8, .2, 1); }
+  .asis::backdrop { background: rgba(23, 18, 24, .5); }
+  @keyframes asis-entrar { from { translate: 40px 0; opacity: 0; } }
+  :global(html.asis-abierto) { overflow: hidden; }
+
+  .asis__head { display: grid; grid-template-columns: 1fr auto; gap: .5rem 1rem; padding: 1.5rem 1.75rem 1.1rem; border-bottom: 1px solid var(--border); }
+  .asis__kicker { margin: 0 0 .25rem; color: var(--red-deep); font-size: .75rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+  .asis__titulos h2 { margin: 0; color: var(--ink); font: 700 clamp(1.5rem, 3vw, 1.9rem)/1.15 var(--font-display); }
+  .asis__cerrar { width: 44px; height: 44px; display: grid; place-items: center; padding: 0; border: 1px solid var(--border); border-radius: 50%; color: var(--ink); background: var(--white); }
+  .asis__cerrar:hover { color: var(--white); background: var(--ink); }
+
+  .asis__progreso { grid-column: 1 / -1; margin-top: .35rem; }
+  .asis__progreso p { margin: 0 0 .55rem; color: var(--text-soft); font-size: .82rem; }
+  .asis__progreso p span:first-child { color: var(--ink); font-weight: 600; }
+  .asis__linea { height: 3px; overflow: hidden; border-radius: 3px; background: var(--border); }
+  .asis__linea span { display: block; height: 100%; background: linear-gradient(90deg, var(--red), var(--violet)); transform-origin: left; scale: .3333 1; transition: scale .45s cubic-bezier(.2, .8, .2, 1); }
+
+  .asis__cuerpo { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 1.5rem 1.75rem; }
+  .asis__paso { display: grid; gap: 1.25rem; }
+  .asis__paso[hidden] { display: none; }
+
+  /* Paso 1 */
+  /* Opciones como filas editoriales (mismo lenguaje que el menú curvo y el catálogo) */
+  .asis__opciones { display: grid; border-top: 1px solid var(--border); }
+  .asis__opcion {
+    --tinta: var(--red);
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 2.75rem 1fr auto;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.6rem 1rem 1.6rem .9rem;
+    border: 0;
+    border-bottom: 1px solid var(--border);
+    color: var(--ink);
+    background: none;
+    text-align: left;
+  }
+  .asis__opcion--vivero { --tinta: var(--violet); }
+  /* Franja de color que llena la fila */
+  .asis__opcion::before { content: ''; position: absolute; inset: 0; z-index: -1; background: var(--tinta); scale: 0 1; transform-origin: left; transition: scale .45s cubic-bezier(.2, .8, .2, 1); }
+  .asis__opcion-num { align-self: start; padding-top: .55rem; color: var(--tinta); font-size: .8rem; font-weight: 700; letter-spacing: .08em; transition: color .3s ease; }
+  .asis__opcion-texto { display: grid; gap: .35rem; }
+  .asis__opcion strong { font: 700 clamp(1.7rem, 4vw, 2.2rem)/1.1 var(--font-display); letter-spacing: -.02em; transition: color .3s ease; }
+  .asis__opcion small { color: var(--text); font-size: .88rem; line-height: 1.5; transition: color .3s ease; }
+  .asis__opcion-flecha { color: var(--ink); transition: color .3s ease, translate .3s ease; }
+  .asis__opcion:hover::before { scale: 1 1; }
+  .asis__opcion:hover :is(strong, .asis__opcion-num, .asis__opcion-flecha) { color: var(--white); }
+  .asis__opcion:hover small { color: rgba(255, 255, 255, .9); }
+  .asis__opcion:hover .asis__opcion-flecha, .asis__opcion:focus-visible .asis__opcion-flecha { translate: 4px 0; }
+  .asis__opcion:focus-visible strong { color: var(--tinta); }
+  .asis__opcion:focus-visible { outline: 3px solid var(--tinta); outline-offset: -3px; }
+
+  .asis__pregunta { display: flex; flex-wrap: wrap; align-items: center; gap: .25rem .75rem; margin: .5rem 0 0; padding-top: 1.25rem; border-top: 1px solid var(--border); font-size: .9rem; }
+  .asis__pregunta a { min-height: 44px; display: inline-flex; align-items: center; gap: .4rem; color: var(--whatsapp); font-weight: 600; text-underline-offset: .3rem; }
+
+  /* Campos */
+  .asis__campo { display: grid; gap: .45rem; }
+  .asis__campo label, .asis__etiqueta { color: var(--ink); font-size: .9rem; font-weight: 600; }
+  .asis__campo label span { color: var(--text-soft); font-weight: 400; }
+  .asis__campo input[type='date'], .asis__campo input[type='text'], .asis__campo input[type='search'], .asis__campo textarea {
+    width: 100%; min-height: 50px; padding: .7rem .9rem; border: 1px solid rgba(33, 27, 34, .2); border-radius: .75rem; color: var(--ink); background: var(--white); font-size: 16px;
+  }
+  .asis__campo textarea { min-height: 80px; resize: vertical; }
+  .asis__campos-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .asis__ayuda { margin: 0; color: var(--text-soft); font-size: .82rem; }
+  .asis__referencia:empty { display: none; }
+
+  /* Contadores − n + */
+  .contador { display: inline-flex; align-items: center; border: 1px solid rgba(33, 27, 34, .2); border-radius: 999px; background: var(--white); }
+  .contador button { width: 44px; height: 44px; display: grid; place-items: center; padding: 0; border: 0; border-radius: 50%; color: var(--ink); background: none; font-size: 1.35rem; line-height: 1; }
+  .contador button:hover { color: var(--red-deep); background: var(--cream); }
+  .contador input { width: 2.6rem; padding: 0; border: 0; background: none; color: var(--ink); font: 600 16px/1 var(--font-body); text-align: center; -moz-appearance: textfield; }
+  .contador input::-webkit-inner-spin-button, .contador input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+  .contador--grande { width: fit-content; }
+  .contador--grande button { width: 52px; height: 52px; }
+  .contador--grande input { width: 3.5rem; font-size: 1.4rem; }
+
+  /* Catálogo */
+  .catalogo-asis h3 { margin: .5rem 0 .4rem; padding-bottom: .4rem; border-bottom: 2px solid var(--ink); color: var(--ink); font-size: .85rem; font-weight: 700; }
+  .catalogo-asis[hidden], .planta[hidden] { display: none; }
+  .catalogo-asis ul { margin: 0; padding: 0; list-style: none; }
+  .planta { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .35rem 0 .35rem .1rem; border-bottom: 1px solid var(--border); }
+  .planta__nombre { color: var(--ink); font: 700 1.05rem/1.3 var(--font-display); }
+  .planta.is-elegida .planta__nombre { color: var(--red-deep); }
+  .planta.is-elegida .contador { border-color: var(--red); }
+  .asis__vacio { margin: 0; font-size: .9rem; }
+
+  /* Paso 3 */
+  .resumen { border: 1px solid var(--border); border-radius: 1rem; }
+  .resumen__fila { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; padding: 1rem 1.1rem; }
+  .resumen__fila + .resumen__fila { border-top: 1px solid var(--border); }
+  .resumen__fila span { display: block; margin-bottom: .2rem; color: var(--text-soft); font-size: .75rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
+  .resumen__fila strong { color: var(--ink); font: 700 1.1rem/1.3 var(--font-display); }
+  .resumen__fila ul { margin: 0; padding: 0; list-style: none; color: var(--ink); font-size: .95rem; line-height: 1.6; }
+  .resumen__fila button { min-height: 44px; padding: 0 .5rem; border: 0; color: var(--red-deep); background: none; font-weight: 600; text-decoration: underline; text-underline-offset: .25rem; }
+  .asis__aviso { margin: .65rem 0 0; font-size: .8rem; line-height: 1.5; }
+  .asis__aviso[hidden] { display: none; }
+  [data-solo][hidden] { display: none; }
+
+  /* Pie fijo */
+  .asis__pie { padding: .9rem 1.75rem 1.25rem; border-top: 1px solid var(--border); background: var(--white); }
+  .asis__error { margin: 0 0 .6rem; color: #a3261b; font-size: .88rem; font-weight: 600; }
+  .asis__barra { margin: 0 0 .6rem; color: var(--ink); font-size: .9rem; font-weight: 600; }
+  .asis__error:empty, .asis__barra:empty, .asis__estado:empty { display: none; }
+  .asis__acciones { display: flex; align-items: center; gap: .75rem; }
+  .asis__seguir, .asis__enviar { flex: 1; }
+  .asis__enviar { color: var(--white); background: var(--whatsapp); }
+  .asis__enviar:hover { background: var(--whatsapp-hover); }
+  .asis__acciones [hidden] { display: none; }
+  .asis__atras { min-height: 50px; padding: 0 1.1rem; border: 1px solid var(--border); border-radius: .7rem; color: var(--ink); background: var(--white); font-weight: 600; }
+  .asis__atras:hover { border-color: var(--ink); }
+  .asis__estado { margin: .7rem 0 0; color: var(--ink); font-size: .82rem; line-height: 1.5; }
+
+  /* Móvil: hoja que sube desde abajo */
+  @media (max-width: 640px) {
+    .asis { width: 100%; height: auto; max-height: 94dvh; margin: auto 0 0; border-radius: 1.5rem 1.5rem 0 0; }
+    .asis[open] { animation-name: asis-subir; }
+    @keyframes asis-subir { from { translate: 0 40px; opacity: 0; } }
+    .asis__head, .asis__cuerpo { padding-inline: 1.1rem; }
+    .asis__pie { padding: .8rem 1.1rem 1rem; }
+    .asis__opcion { grid-template-columns: 2rem 1fr auto; gap: .75rem; padding: 1.35rem .75rem 1.35rem .6rem; }
+    .asis__campos-2 { grid-template-columns: 1fr; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .asis[open] { animation: none; }
+    .asis__opcion::before, .asis__linea span { transition: none; }
+  }
+</style>

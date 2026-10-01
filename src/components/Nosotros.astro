@@ -1,0 +1,115 @@
+---
+import { Image } from 'astro:assets';
+import comunidad from '../assets/fotos/arboles-nativos.jpeg';
+import { nosotros } from '../data/sitio';
+
+const pestanas = [
+  { id: 'historia', label: 'Historia' },
+  { id: 'mision', label: 'Misión' },
+  { id: 'vision', label: 'Visión' },
+  { id: 'valores', label: 'Valores' },
+];
+const arboles = nosotros.logros[0];
+---
+
+<section class="nosotros section" id="nosotros" aria-labelledby="nosotros-title">
+  <div class="container nosotros__grid">
+    <figure class="nosotros__visual reveal">
+      <Image
+        src={comunidad}
+        widths={[420, 640, 900]}
+        sizes="(max-width: 900px) 90vw, 34vw"
+        alt="Familias de la vereda posan sonrientes en el vivero, entre plántulas en bolsa, bajo la malla de sombra."
+        quality={62}
+        class="nosotros__foto"
+      />
+      <figcaption class="nosotros__cifra">
+        <strong>{arboles.cifra}</strong>
+        <span>{arboles.texto}</span>
+      </figcaption>
+    </figure>
+
+    <div class="nosotros__content">
+      <span class="kicker reveal">Quiénes somos</span>
+      <h2 class="title reveal" id="nosotros-title">Una vereda que decidió cuidar su <span class="scribble">bosque</span></h2>
+
+      <div class="nosotros__tabs reveal" data-tabs>
+        <div class="tabs__list" role="tablist" aria-label="Sobre la comunidad">
+          {pestanas.map((p, i) => (
+            <button class="tabs__tab" type="button" role="tab" id={`tab-${p.id}`} aria-controls={`panel-${p.id}`} aria-selected={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? 0 : -1} data-tab={p.id}>{p.label}</button>
+          ))}
+        </div>
+
+        <div class="tabs__panel" role="tabpanel" id="panel-historia" aria-labelledby="tab-historia" tabindex="0">
+          <p class="nosotros__entrada">Vivimos en la zona de influencia de la hidroeléctrica El Quimbo y hemos visto de cerca cómo cambia un territorio cuando se transforma su paisaje.</p>
+          <p>{nosotros.historia[0]}</p>
+          <p>De ahí salieron dos decisiones: montar un vivero de especies nativas y frutales, y abrir un sendero para conocer el bosque, sus aves y sus historias.</p>
+        </div>
+        <div class="tabs__panel" role="tabpanel" id="panel-mision" aria-labelledby="tab-mision" tabindex="0" hidden>
+          <p class="nosotros__entrada">{nosotros.mision.split('. ')[0]}.</p>
+          <p>{nosotros.mision.split('. ').slice(1).join('. ')}</p>
+        </div>
+        <div class="tabs__panel" role="tabpanel" id="panel-vision" aria-labelledby="tab-vision" tabindex="0" hidden>
+          <p class="nosotros__entrada">{nosotros.vision}</p>
+        </div>
+        <div class="tabs__panel" role="tabpanel" id="panel-valores" aria-labelledby="tab-valores" tabindex="0" hidden>
+          <ol class="valores">
+            {nosotros.valores.map((valor) => (
+              <li><strong>{valor.titulo}</strong><span>{valor.texto}</span></li>
+            ))}
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .nosotros { isolation: isolate; padding-top: 1.5rem; }
+  .nosotros__grid { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: clamp(3rem, 7vw, 6.5rem); align-items: start; }
+
+  /* Foto con esquinas redondeadas como las franjas del hero; cifra de árboles debajo */
+  .nosotros__visual { position: sticky; top: 2rem; margin: 0; }
+  .nosotros__visual :global(.nosotros__foto) { width: 100%; height: auto; aspect-ratio: 4 / 5; border-radius: clamp(1rem, 2vw, 1.9rem); object-fit: cover; box-shadow: var(--shadow-card); }
+  .nosotros__cifra { display: flex; align-items: center; gap: 1.1rem; margin-top: 1.5rem; padding-top: 1.25rem; border-top: 2px solid var(--ink); }
+  .nosotros__cifra strong { flex: 0 0 auto; color: var(--red-deep); font: 700 clamp(3rem, 5vw, 4.25rem)/1 var(--font-display); letter-spacing: -.03em; }
+  .nosotros__cifra span { max-width: 24ch; padding-left: 1.1rem; border-left: 1px solid var(--border); color: var(--ink); font-size: .95rem; font-weight: 500; line-height: 1.45; }
+
+  .nosotros__content .title { max-width: 17ch; }
+
+  /* Pestañas: mismo estilo que «Detalles y precios» */
+  .nosotros__tabs { margin-top: 2rem; }
+  .nosotros .tabs__list { gap: 1.75rem; border-bottom: 1px solid var(--border); }
+  .nosotros .tabs__tab { position: relative; min-height: 48px; padding: .5rem .1rem; border: 0; border-radius: 0; color: var(--text-soft); background: none; box-shadow: none; font: 700 1.1rem/1.2 var(--font-display); }
+  .nosotros .tabs__tab::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 3px; border-radius: 3px; background: var(--red); scale: 0 1; transition: scale .3s cubic-bezier(.2, .8, .2, 1); }
+  .nosotros .tabs__tab:hover { color: var(--ink); }
+  .nosotros .tabs__tab[aria-selected='true'] { color: var(--ink); background: none; box-shadow: none; }
+  .nosotros .tabs__tab[aria-selected='true']::after { scale: 1 1; }
+
+  .tabs__panel { min-height: 16rem; padding-top: 2rem; }
+  .tabs__panel p { max-width: 58ch; font-size: 1rem; line-height: 1.8; }
+  .tabs__panel p:last-child { margin-bottom: 0; }
+  .tabs__panel p.nosotros__entrada { max-width: 26ch; margin-bottom: 1.5rem; color: var(--ink); font: 700 clamp(1.45rem, 2.4vw, 1.9rem)/1.3 var(--font-display); letter-spacing: -.01em; }
+  #panel-vision p.nosotros__entrada { max-width: 34ch; }
+
+  /* Valores como lista numerada, igual que el catálogo */
+  .valores { margin: 0; padding: 0; list-style: none; counter-reset: valor; }
+  .valores li { display: grid; grid-template-columns: 2.5rem minmax(0, 13rem) 1fr; gap: 1rem; align-items: baseline; padding: 1rem 0; border-bottom: 1px solid var(--border); counter-increment: valor; }
+  .valores li:first-child { border-top: 2px solid var(--ink); }
+  .valores li::before { content: counter(valor, decimal-leading-zero); color: var(--red-deep); font-size: .8rem; font-weight: 700; letter-spacing: .08em; }
+  .valores strong { color: var(--ink); font: 700 1.1rem/1.3 var(--font-display); }
+  .valores span { font-size: .92rem; line-height: 1.6; }
+
+  @media (max-width: 900px) {
+    .nosotros__grid { grid-template-columns: 1fr; }
+    .nosotros__visual { position: static; order: 2; width: min(100%, 420px); }
+    .nosotros__visual :global(.nosotros__foto) { aspect-ratio: 4 / 3; }
+  }
+  @media (max-width: 560px) {
+    .tabs__panel { min-height: 0; }
+    .nosotros .tabs__list { gap: 1.1rem; }
+    .nosotros .tabs__tab { flex: 0 0 auto; font-size: 1rem; }
+    .valores li { grid-template-columns: 2rem 1fr; }
+    .valores span { grid-column: 2; }
+  }
+</style>

@@ -1,0 +1,151 @@
+/*
+  Animaciones ligadas al scroll con CSS nativo (animation-timeline).
+  Solo se activan si el navegador las soporta y la persona no pidió reducir el movimiento.
+  En los demás casos sigue funcionando la aparición con IntersectionObserver (.reveal en global.css).
+  Se usan las propiedades translate, scale y rotate (no transform) para no pisar los efectos hover.
+  Importante: solo propiedades individuales (animation-name, -timeline…), nunca el atajo `animation`.
+  El minificador fusiona el atajo con animation-timeline y Chrome descarta esa declaración.
+*/
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    /* 1. Aparición progresiva de bloques y tarjetas */
+    .reveal {
+      opacity: 1;
+      transform: none;
+      transition: none;
+      animation-name: sd-aparecer;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: view();
+      /* Distancias fijas: termina cuando el elemento subió 220px desde el borde inferior,
+         así nunca queda tenue estando a la vista, sea alto o bajo. */
+      animation-range: entry 0% entry 220px;
+    }
+
+    /* 2. Tarjetas en cascada: cada una entra un poco después que la anterior */
+    .caminos > .reveal:nth-child(2) { animation-range: entry 60px entry 300px; }
+
+    /* 3. Barra de progreso de lectura bajo la navegación */
+    .progreso {
+      animation-name: sd-progreso;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: scroll(root);
+    }
+
+    /* 4. Subrayados a mano que se dibujan al aparecer */
+    .scribble::after {
+      animation-name: sd-dibujar;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: view();
+      animation-range: entry 80px entry 280px;
+    }
+    .hero .scribble::after {
+      animation-timeline: auto;
+      animation-range: normal;
+      animation-duration: .9s;
+      animation-delay: .35s;
+      animation-timing-function: cubic-bezier(.6, 0, .2, 1);
+    }
+
+    /* 5. Hero «ventana»: el arco se abre hasta llenar la pantalla mientras el escenario queda fijo */
+    .hero { height: 170svh; }
+    .hero .hero__stage.hero__stage { position: sticky; top: 0; }
+    .hero__franja, .hero__franja img, .hero__sombra, .hero__caption, .hero__top {
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: scroll(root);
+    }
+    /* La central se abre primero; las laterales la alcanzan un poco después */
+    .hero__franja { animation-name: hero-abrir; animation-range: 0 60svh; }
+    .hero__franja--centro { animation-range: 0 52svh; }
+    .hero__franja img { animation-name: hero-acercar; animation-range: 0 60svh; }
+    .hero__top { animation-name: hero-salir; animation-range: 0 32svh; }
+    .hero__sombra, .hero__caption { animation-name: hero-mostrar; animation-range: 42svh 62svh; }
+    .hero__ave, .hero__halo {
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: scroll(root);
+      animation-range: 0 45svh;
+    }
+    .hero__ave { animation-name: hero-ave; animation-range: 0 35svh; }
+    .hero__halo { animation-name: hero-salir-suave; }
+    /* El ave aletea suave mientras la persona está en el hero */
+    .hero__pajaro { animation: hero-aleteo 2.4s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+
+    /* En teléfono, texto y fotografía siguen el scroll normal para llegar antes a los servicios. */
+    @media (max-width: 640px) {
+      .hero { height: auto; }
+      .hero .hero__stage.hero__stage { position: relative; }
+      .hero__franja, .hero__franja img, .hero__sombra, .hero__caption, .hero__top,
+      .hero__ave, .hero__halo { animation-name: none; }
+    }
+
+    /* 7. Transición entre secciones: cada una sube con el borde superior en arco
+          (como el hero y el menú) y se aplana al llegar. Se monta 4rem sobre la anterior
+          para que las esquinas dejen ver lo que hay detrás. */
+    main > section:not(.hero) {
+      position: relative;
+      z-index: 1;
+      margin-top: -4rem;
+      border-top: 4rem solid transparent;
+      clip-path: polygon(0% calc(var(--curva) * 1.0000), 5% calc(var(--curva) * 0.8100), 10% calc(var(--curva) * 0.6400), 15% calc(var(--curva) * 0.4900), 20% calc(var(--curva) * 0.3600), 25% calc(var(--curva) * 0.2500), 30% calc(var(--curva) * 0.1600), 35% calc(var(--curva) * 0.0900), 40% calc(var(--curva) * 0.0400), 45% calc(var(--curva) * 0.0100), 50% 0, 55% calc(var(--curva) * 0.0100), 60% calc(var(--curva) * 0.0400), 65% calc(var(--curva) * 0.0900), 70% calc(var(--curva) * 0.1600), 75% calc(var(--curva) * 0.2500), 80% calc(var(--curva) * 0.3600), 85% calc(var(--curva) * 0.4900), 90% calc(var(--curva) * 0.6400), 95% calc(var(--curva) * 0.8100), 100% calc(var(--curva) * 1.0000), 100% 100%, 0 100%);
+      animation-name: seccion-arco;
+      animation-timing-function: cubic-bezier(.3, .6, .4, 1);
+      animation-fill-mode: both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 75vh;
+    }
+    main > section.nosotros { background-color: var(--white); }
+    /* Bandas de color: espacio extra abajo para que la siguiente sección suba en arco sobre el color */
+    /* La cinta es una franja fina: no se monta sobre el hero ni lleva arco propio,
+       pero guarda 4rem abajo para que «Lo que hacemos» suba en arco sobre ella. */
+    main > section.cinta.cinta {
+      margin-top: 0;
+      border-top-width: 0;
+      clip-path: none;
+      animation-name: none;
+      padding-bottom: calc(1.1rem + 4rem);
+    }
+
+    @media (min-width: 901px) {
+      /* 6. Los dos videos se desplazan a ritmos distintos */
+      .reel--vivero {
+        animation-name: sd-aparecer, sd-desfase;
+        animation-timing-function: linear;
+        animation-fill-mode: both;
+        animation-timeline: view(), view();
+        animation-range: entry 0% entry 220px, cover 0% cover 100%;
+      }
+    }
+  }
+}
+
+@keyframes sd-aparecer {
+  from { opacity: 0; translate: 0 48px; scale: .97; }
+  to { opacity: 1; translate: 0 0; scale: 1; }
+}
+@keyframes sd-progreso { from { scale: 0 1; } to { scale: 1 1; } }
+@keyframes sd-dibujar {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+@keyframes hero-abrir { to { clip-path: inset(0 0 0 0 round 0 0 0 0); } }
+@keyframes hero-acercar { from { scale: 1.12; } to { scale: 1; } }
+@keyframes hero-salir { to { opacity: 0; translate: 0 -6svh; } }
+@keyframes hero-mostrar { from { opacity: 0; } to { opacity: 1; } }
+@keyframes hero-ave { to { translate: 12vw -18svh; opacity: 0; } }
+@keyframes hero-salir-suave { to { opacity: 0; } }
+@keyframes hero-aleteo { 50% { scale: 1 .7; translate: 0 -2px; } }
+@property --curva {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+@keyframes seccion-arco {
+  from { --curva: clamp(2.5rem, 9vw, 8rem); }
+  to { --curva: 0px; }
+}
+@keyframes sd-desfase { from { translate: 0 60px; } to { translate: 0 -40px; } }

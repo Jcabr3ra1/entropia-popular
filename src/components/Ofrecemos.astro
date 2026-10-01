@@ -1,0 +1,211 @@
+---
+import { formatoPesos, frutales, incluidoVivero, nativasEnIncorporacion, nativasEnPropagacion, pasadia, precios, waLink, mensajesWa } from '../data/sitio';
+
+// Itinerario del pasadía. El orden sale del recorrido publicado; los horarios no se conocen (ver CONTENT_REVIEW.md).
+const itinerario = [
+  { titulo: 'Encuentro en el vivero', texto: 'Nos vemos en el vivero comunitario de la vereda La Cañada, en El Agrado.' },
+  { titulo: 'Sendero del bosque seco', texto: 'Caminamos el sendero interpretativo con guías de la vereda, que conocen cada árbol y su historia.' },
+  { titulo: 'Observación de aves', texto: 'Con binoculares y telescopio buscamos las aves que viven en el Bosque Seco Tropical.' },
+  { titulo: 'Vivero comunitario', texto: 'Conoce dónde germinan y crecen las plántulas que luego vuelven al bosque.' },
+  { titulo: 'Área en restauración', texto: 'Visitamos el lugar donde sembramos árboles nativos con trabajo comunitario.' },
+];
+
+const catalogo = [
+  { id: 'nativas', titulo: 'Nativas del bosque seco', nota: 'En propagación', especies: nativasEnPropagacion },
+  { id: 'frutales', titulo: 'Frutales', nota: 'Listos para sembrar', especies: frutales },
+  { id: 'pronto', titulo: 'Llegando pronto', nota: 'Consultar disponibilidad', especies: nativasEnIncorporacion },
+];
+---
+
+<section class="ofrecemos section on-light" id="ofrecemos" aria-labelledby="ofrecemos-title">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="kicker">Detalles y precios</span>
+      <h2 class="title" id="ofrecemos-title">Caminarlo o <span class="scribble scribble--violet">sembrarlo</span></h2>
+    </div>
+
+    <div class="ofrecemos__tabs" data-tabs>
+      <div class="ofrecemos__switch reveal">
+        <div class="tabs__list" role="tablist" aria-label="Detalles del sendero o del vivero">
+          <button class="tabs__tab" type="button" role="tab" id="tab-sendero" aria-controls="panel-sendero" aria-selected="true" tabindex="0" data-tab="sendero">El pasadía</button>
+          <button class="tabs__tab" type="button" role="tab" id="tab-vivero" aria-controls="panel-vivero" aria-selected="false" tabindex="-1" data-tab="vivero">El vivero</button>
+        </div>
+      </div>
+
+      <!-- Pasadía: itinerario + boleto -->
+      <div class="tabs__panel oferta" role="tabpanel" id="panel-sendero" aria-labelledby="tab-sendero" tabindex="0">
+        <div class="oferta__principal">
+          <h3>Así es el día</h3>
+          <p class="oferta__lead">Un recorrido por el Bosque Seco Tropical guiado por quienes vivimos aquí. No es un paseo con un folleto: es caminar el territorio con la gente que conoce cada árbol y cada ave.</p>
+          <ol class="itinerario">
+            {itinerario.map((paso) => (
+              <li>
+                <h4>{paso.titulo}</h4>
+                <p>{paso.texto}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+
+        <aside class="boleto" aria-labelledby="boleto-pasadia">
+          <p class="boleto__tipo">Pasadía</p>
+          <h3 id="boleto-pasadia">Observación de aves</h3>
+          <dl class="boleto__datos">
+            <div><dt>Duración</dt><dd>2 h 30 min de recorrido</dd></div>
+            <div><dt>Grupo</dt><dd>Hasta {pasadia.capacidadMaxima} personas</dd></div>
+            <div><dt>Encuentro</dt><dd>Vivero comunitario, La Cañada</dd></div>
+          </dl>
+          <div class="boleto__corte" aria-hidden="true"></div>
+          <p class="boleto__rotulo">Incluye</p>
+          <ul class="boleto__lista">{pasadia.incluye.map((item) => <li>{item}</li>)}</ul>
+          <p class="boleto__nota"><strong>Lleve:</strong> {pasadia.recomendaciones.toLowerCase()}</p>
+          <div class="boleto__corte" aria-hidden="true"></div>
+          <p class="boleto__precio"><strong>{formatoPesos(precios.pasadiaPorPersona)}</strong> por persona · precio indicativo</p>
+          <a class="btn btn--primary boleto__accion" href={waLink(mensajesWa.pasadia)} target="_blank" rel="noopener" data-asistente="pasadia">Proponer una fecha</a>
+          <p class="boleto__letra">La fecha se confirma por WhatsApp y se separa con pago anticipado.</p>
+        </aside>
+      </div>
+
+      <!-- Vivero: catálogo + boleto -->
+      <div class="tabs__panel oferta" role="tabpanel" id="panel-vivero" aria-labelledby="tab-vivero" tabindex="0" hidden>
+        <div class="oferta__principal">
+          <h3>Catálogo del vivero</h3>
+          <p class="oferta__lead">Propagamos a partir de semilla recolectada en nuestro territorio. Cada plántula se entrega embolsada, endurecida y lista para siembra.</p>
+          <div class="catalogo">
+            {catalogo.map((grupo) => (
+              <section class:list={['catalogo__grupo', `catalogo__grupo--${grupo.id}`]} aria-labelledby={`cat-${grupo.id}`}>
+                <h4 id={`cat-${grupo.id}`}>{grupo.titulo} <span>{grupo.especies.length}</span></h4>
+                <p>{grupo.nota}</p>
+                <ul>{grupo.especies.map((e) => <li>{e}</li>)}</ul>
+              </section>
+            ))}
+          </div>
+          <p class="oferta__asesoria">¿No sabe qué especie sembrar? Le asesoramos según su terreno: la asesoría va incluida en toda venta.</p>
+          <p class="oferta__aparte"><strong>Ornamentales:</strong> línea en preparación. Escríbanos si le interesa.</p>
+        </div>
+
+        <aside class="boleto" aria-labelledby="boleto-vivero">
+          <p class="boleto__tipo">Vivero</p>
+          <h3 id="boleto-vivero">Plántulas nativas y frutales</h3>
+          <dl class="boleto__datos">
+            <div><dt>Pedido mínimo</dt><dd>1 plántula</dd></div>
+            <div><dt>Entrega</dt><dd>Cerca de una semana, si la especie está en producción</dd></div>
+            <div><dt>Desde 24 plántulas</dt><dd>Pregunte por el descuento</dd></div>
+          </dl>
+          <div class="boleto__corte" aria-hidden="true"></div>
+          <p class="boleto__rotulo">Incluido en toda venta</p>
+          <ul class="boleto__lista">{incluidoVivero.map((item) => <li>{item}</li>)}</ul>
+          <div class="boleto__corte" aria-hidden="true"></div>
+          <p class="boleto__precio"><strong>{formatoPesos(precios.plantula)}</strong> por plántula · precio indicativo</p>
+          <a class="btn btn--primary boleto__accion" href={waLink(mensajesWa.plantas)} target="_blank" rel="noopener" data-asistente="plantas">Armar mi lista de plantas</a>
+          <p class="boleto__letra">Confirmamos especies, cantidades, valor final y entrega antes de cualquier pago.</p>
+        </aside>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .ofrecemos { background: var(--cream); padding-top: 1.5rem; }
+
+  /* Pestañas como texto con subrayado, sin íconos */
+  .ofrecemos__switch { display: flex; justify-content: center; margin: -1rem 0 clamp(2.5rem, 5vw, 3.75rem); }
+  .ofrecemos .tabs__list { gap: 2rem; border-bottom: 1px solid var(--border); }
+  .ofrecemos .tabs__tab { position: relative; min-height: 48px; padding: .5rem .25rem; border: 0; border-radius: 0; color: var(--text-soft); background: none; box-shadow: none; font: 700 clamp(1.15rem, 2vw, 1.4rem)/1.2 var(--font-display); }
+  .ofrecemos .tabs__tab::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 3px; border-radius: 3px; background: var(--red); scale: 0 1; transition: scale .3s cubic-bezier(.2, .8, .2, 1); }
+  .ofrecemos .tabs__tab:hover { color: var(--ink); }
+  .ofrecemos .tabs__tab[aria-selected='true'] { color: var(--ink); background: none; box-shadow: none; }
+  .ofrecemos .tabs__tab[aria-selected='true']::after { scale: 1 1; }
+
+  .oferta { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, .85fr); gap: clamp(2.5rem, 6vw, 5.5rem); align-items: start; }
+  .oferta[hidden] { display: none; }
+  :global(.no-js) .oferta[hidden] { display: grid; margin-top: 4rem; }
+
+  .oferta__principal h3 { margin: 0 0 .75rem; font: 700 clamp(2rem, 3.4vw, 2.8rem)/1.1 var(--font-display); letter-spacing: -.02em; }
+  .oferta__lead { max-width: 58ch; margin-bottom: 2.5rem; font-size: 1.02rem; }
+
+  /* Itinerario: línea punteada como la ruta de las aves del hero */
+  .itinerario { position: relative; margin: 0; padding: 0; list-style: none; counter-reset: paso; }
+  .itinerario::before { content: ''; position: absolute; top: .9rem; bottom: .9rem; left: .55rem; border-left: 2px dotted rgba(117, 40, 139, .55); }
+  .itinerario li { position: relative; padding: 0 0 2rem 3rem; counter-increment: paso; }
+  .itinerario li:last-child { padding-bottom: 0; }
+  .itinerario li::before { content: ''; position: absolute; top: .45rem; left: 0; width: 1.2rem; height: 1.2rem; border: 3px solid var(--cream); border-radius: 50%; background: var(--violet); box-shadow: 0 0 0 1.5px var(--violet); }
+  .itinerario li:first-child::before { background: var(--red); box-shadow: 0 0 0 1.5px var(--red); }
+  .itinerario h4 { margin: 0 0 .3rem; color: var(--ink); font: 700 clamp(1.3rem, 2.2vw, 1.65rem)/1.2 var(--font-display); }
+  .itinerario h4::before { content: counter(paso, decimal-leading-zero) ' · '; color: var(--red-deep); font: 700 .8rem/1 var(--font-body); letter-spacing: .08em; vertical-align: .35em; }
+  .itinerario p { max-width: 50ch; margin: 0; font-size: .96rem; line-height: 1.6; }
+
+  /* Catálogo: nombres en serif, como un catálogo de semillas */
+  .catalogo { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 2rem clamp(1.5rem, 3vw, 2.75rem); }
+  .catalogo__grupo { padding-top: 1rem; border-top: 2px solid var(--ink); }
+  .catalogo__grupo--pronto { border-top-color: var(--violet); }
+  .catalogo h4 { color: var(--ink); display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; margin: 0; font: 700 1.05rem/1.3 var(--font-body); }
+  .catalogo h4 span { color: var(--red-deep); font-size: .85rem; }
+  .catalogo__grupo > p { margin: .1rem 0 1rem; color: var(--text-soft); font-size: .82rem; }
+  .catalogo ul { margin: 0; padding: 0; list-style: none; }
+  .catalogo__grupo--nativas ul { columns: 2; column-gap: 1.5rem; }
+  .catalogo li { padding: .35rem 0; border-bottom: 1px solid var(--border); break-inside: avoid; color: var(--ink); font: 700 1.05rem/1.35 var(--font-display); }
+  .catalogo__grupo--pronto li { color: var(--violet); font-style: italic; }
+  .oferta__asesoria { margin: 2rem 0 0; padding-left: 1rem; border-left: 3px solid var(--violet); color: var(--ink); font: 700 1.15rem/1.4 var(--font-display); }
+  .oferta__aparte { margin: 1.25rem 0 0; font-size: .92rem; }
+  .oferta__aparte strong { color: var(--ink); }
+
+  /* Boleto: ficha práctica con cortes laterales */
+  .boleto { position: sticky; top: 2rem; padding: clamp(1.5rem, 2.8vw, 2.25rem); border-radius: 1.5rem; background: var(--white); box-shadow: var(--shadow-card); }
+  .boleto__tipo { margin: 0 0 .35rem; color: var(--red-deep); font-size: .78rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+  .boleto h3 { margin: 0 0 1.25rem; font: 700 1.6rem/1.15 var(--font-display); }
+  .boleto__datos { display: grid; gap: .8rem; margin: 0; }
+  .boleto__datos div { display: grid; grid-template-columns: 7.5rem 1fr; gap: 1rem; }
+  .boleto__datos dt { color: var(--text-soft); font-size: .85rem; }
+  .boleto__datos dd { margin: 0; color: var(--ink); font-size: .92rem; font-weight: 600; }
+  .boleto__corte { position: relative; height: 0; margin: 1.5rem calc(-1 * clamp(1.5rem, 2.8vw, 2.25rem)); border-top: 2px dashed var(--border); }
+  .boleto__corte::before, .boleto__corte::after { content: ''; position: absolute; top: -.8rem; width: 1.6rem; height: 1.6rem; border-radius: 50%; background: var(--cream); }
+  .boleto__corte::before { left: -.8rem; }
+  .boleto__corte::after { right: -.8rem; }
+  .boleto__rotulo { margin: 0 0 .6rem; color: var(--ink); font-size: .85rem; font-weight: 700; }
+  .boleto__lista { display: grid; gap: .4rem; margin: 0; padding: 0; list-style: none; }
+  .boleto__lista li { position: relative; padding-left: 1rem; font-size: .9rem; line-height: 1.5; }
+  .boleto__lista li::before { content: ''; position: absolute; top: .6em; left: 0; width: .35rem; height: .35rem; border-radius: 50%; background: var(--violet); }
+  .boleto__nota { margin: 1rem 0 0; font-size: .88rem; }
+  .boleto__nota strong { color: var(--ink); }
+  .boleto__precio { margin: 0 0 1.1rem; font-size: .88rem; }
+  .boleto__precio strong { display: block; color: var(--ink); font: 700 2.1rem/1.1 var(--font-display); }
+  .boleto__accion { width: 100%; }
+  .boleto__letra { margin: .8rem 0 0; color: var(--text-soft); font-size: .8rem; line-height: 1.5; text-align: center; }
+
+  @media (max-width: 1000px) {
+    .oferta { grid-template-columns: 1fr; }
+    .boleto { position: static; }
+    .catalogo { grid-template-columns: 1fr 1fr; }
+    .catalogo__grupo--nativas { grid-column: 1 / -1; }
+  }
+  @media (max-width: 560px) {
+    .catalogo { grid-template-columns: 1fr; }
+    .boleto__datos div { grid-template-columns: 1fr; gap: .1rem; }
+    .ofrecemos .tabs__list { width: auto; gap: 1.5rem; }
+    .ofrecemos .tabs__tab { flex: 0 0 auto; }
+  }
+
+  /* La línea del itinerario se dibuja con el scroll y cada punto se enciende al llegar */
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      .itinerario::before {
+        transform-origin: top;
+        animation-name: itinerario-trazar;
+        animation-timing-function: linear;
+        animation-fill-mode: both;
+        animation-timeline: view();
+        animation-range: entry 5% entry 95%;
+      }
+      .itinerario li::before {
+        animation-name: itinerario-punto;
+        animation-timing-function: linear;
+        animation-fill-mode: both;
+        animation-timeline: view();
+        animation-range: entry 60% entry 100%;
+      }
+    }
+  }
+  @keyframes itinerario-trazar { from { scale: 1 0; } to { scale: 1 1; } }
+  @keyframes itinerario-punto { from { scale: .4; opacity: .3; } to { scale: 1; opacity: 1; } }
+</style>

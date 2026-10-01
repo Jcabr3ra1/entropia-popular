@@ -1,0 +1,251 @@
+---
+import { waLink, mensajesWa } from '../data/sitio';
+import { Picture } from 'astro:assets';
+import Icon from './Icon.astro';
+import Brand from './Brand.astro';
+import sendero from '../assets/fotos/pasadia.jpeg';
+---
+
+<!--
+  Hero «tríptico»: la foto del sendero aparece cortada en tres franjas verticales con espacio entre ellas.
+  Con scroll (CSS nativo, ver scroll.css) las franjas se juntan hasta formar una sola foto a pantalla completa.
+  Cada franja lleva la misma imagen a tamaño de escenario y se recorta con clip-path, así se alinean exactas.
+  Sin soporte o con movimiento reducido queda el tríptico quieto.
+-->
+<section class="hero" id="inicio" aria-labelledby="hero-title">
+  <div class="hero__stage">
+    <div class="hero__halo" aria-hidden="true"></div>
+
+    <!-- Aves con su ruta punteada en la franja superior, sobre el titular -->
+    <svg class="hero__ave" viewBox="0 0 320 160" aria-hidden="true" focusable="false">
+      <path class="hero__ruta" d="M12 150 C 80 140, 120 60, 190 70 S 280 40, 296 22" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="2 9" stroke-linecap="round" />
+      <g class="hero__pajaro" transform="translate(296 22)">
+        <path d="M-15 1c5-7 10-9 15-3 5-6 10-4 15 3-6-2-10-1-15 5-5-6-9-7-15-5Z" fill="currentColor" />
+      </g>
+      <g class="hero__pajaro2" transform="translate(236 58) scale(.6)">
+        <path d="M-15 1c5-7 10-9 15-3 5-6 10-4 15 3-6-2-10-1-15 5-5-6-9-7-15-5Z" fill="#d10818" />
+      </g>
+    </svg>
+
+    <div class="container hero__top">
+      <div class="hero__logo"><Brand /></div>
+      <div class="hero__heading">
+        <span class="hero__kicker">Bosque Seco Tropical · La Cañada, El Agrado</span>
+        <h1 id="hero-title">
+          <span class="hero__palabra" style="--i: 0"><span>Camine</span></span> <span class="hero__palabra" style="--i: 1"><span>el</span></span> <span class="hero__palabra" style="--i: 2"><span>bosque</span></span>
+          <span class="hero__sub">con quienes lo siembran.</span>
+        </h1>
+      </div>
+      <div class="hero__side">
+        <p>Pasadías de observación de aves y un vivero de árboles nativos, guiados por la comunidad.</p>
+        <div class="hero__actions">
+          <a class="btn btn--primary" href={waLink(mensajesWa.pasadia)} target="_blank" rel="noopener" data-asistente="pasadia">Planear mi visita</a>
+          <a class="hero__link" href="#ofrecemos" data-tab-target="vivero">Ver el vivero <Icon name="arrow" size={16} /></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero__window">
+      <div class="hero__franja hero__franja--izq" aria-hidden="true">
+        <Picture
+          src={sendero}
+          formats={['avif', 'webp']}
+          widths={[640, 960, 1200]}
+          sizes="100vw"
+          alt=""
+          loading="eager"
+          fetchpriority="high"
+          quality={62}
+        />
+      </div>
+      <div class="hero__franja hero__franja--centro">
+        <Picture
+          src={sendero}
+          formats={['avif', 'webp']}
+          widths={[640, 960, 1200]}
+          sizes="100vw"
+          alt="Un grupo recorre un sendero de tierra en el bosque seco mientras una guía señala hacia los árboles."
+          loading="eager"
+          fetchpriority="high"
+          quality={62}
+        />
+      </div>
+      <div class="hero__franja hero__franja--der" aria-hidden="true">
+        <Picture
+          src={sendero}
+          formats={['avif', 'webp']}
+          widths={[640, 960, 1200]}
+          sizes="100vw"
+          alt=""
+          loading="eager"
+          fetchpriority="high"
+          quality={62}
+        />
+      </div>
+      <div class="hero__sombra" aria-hidden="true"></div>
+      <p class="hero__caption" aria-hidden="true">Sendero de La Cañada<span>El Agrado, Huila</span></p>
+    </div>
+
+  </div>
+</section>
+
+<script>
+  // Las franjas crecen cuando la foto ya está lista; si tarda más de 2,5 s, arrancan igual.
+  const hero = document.querySelector<HTMLElement>('.hero');
+  const foto = document.querySelector<HTMLImageElement>('.hero__franja--centro img');
+  const listo = () => hero?.classList.add('hero--lista');
+  if (!foto || foto.complete) listo();
+  else {
+    foto.decode().then(listo, listo);
+    window.setTimeout(listo, 2500);
+  }
+</script>
+
+<style>
+  .hero { position: relative; background: var(--white); }
+
+  .hero__stage {
+    --top: clamp(24rem, 45svh, 27.5rem);
+    /* Tríptico: ancho total, separación, columnas laterales (30 %) y central (40 %) */
+    --w: min(86cqw, 1180px);
+    --gap: clamp(.6rem, 1.4cqw, 1.25rem);
+    --l: calc((100cqw - var(--w)) / 2);
+    --c: calc((var(--w) - var(--gap) * 2) * .3);
+    --m: calc((var(--w) - var(--gap) * 2) * .4);
+    --bajo: clamp(2rem, 7svh, 4.5rem);
+    --r: clamp(1rem, 2cqw, 1.9rem);
+    position: relative;
+    height: 100svh;
+    min-height: 640px;
+    overflow: hidden;
+    container-type: inline-size;
+  }
+
+  /* Retícula: fila 1 = logo (alineado con el botón de menú fijo); fila 2 = titular | frase y acción */
+  .hero__top {
+    position: relative;
+    z-index: 2;
+    height: var(--top);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 23rem);
+    grid-template-rows: var(--header-h) 1fr;
+    grid-template-areas: 'logo logo' 'heading side';
+    column-gap: clamp(2rem, 6vw, 6rem);
+    padding-bottom: clamp(2rem, 4.5svh, 3rem);
+  }
+  .hero__logo { grid-area: logo; align-self: center; }
+  .hero__logo :global(.brand) { width: 150px; }
+  .hero__heading { grid-area: heading; align-self: end; }
+  .hero__side { grid-area: side; align-self: end; }
+
+  .hero__kicker { display: block; margin-bottom: 1rem; color: var(--red-deep); font-size: .8rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+  .hero h1 { margin: 0; color: var(--ink); font: 700 clamp(3rem, 5.8cqw, 5.2rem)/.95 var(--font-display); letter-spacing: -.035em; white-space: nowrap; }
+  .hero h1 .hero__sub { display: block; margin-top: .3em; color: var(--violet); font-size: .46em; letter-spacing: -.01em; white-space: normal; }
+  /* La frase y la acción cierran a la misma altura que la última línea del titular */
+  .hero__side p { margin: 0 0 1.25rem; font-size: 1rem; line-height: 1.65; }
+  .hero__actions { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem 1.5rem; }
+  .hero__link { min-height: 44px; display: inline-flex; align-items: center; gap: .4rem; color: var(--ink); font-weight: 600; text-underline-offset: .3rem; }
+  .hero__link:hover { color: var(--red-deep); }
+
+  /* Ventana en arco: ocupa todo el escenario y se recorta con clip-path */
+  .hero__window { position: absolute; inset: 0; z-index: 1; }
+  .hero__franja { position: absolute; inset: 0; }
+  /* Las laterales empiezan más abajo que la central: forma escalonada */
+  .hero__franja--izq { clip-path: inset(calc(var(--top) + var(--bajo)) calc(100cqw - var(--l) - var(--c)) 0 var(--l) round var(--r) var(--r) 0 0); }
+  .hero__franja--centro { clip-path: inset(var(--top) calc(var(--l) + var(--c) + var(--gap)) 0 calc(var(--l) + var(--c) + var(--gap)) round var(--r) var(--r) 0 0); }
+  .hero__franja--der { clip-path: inset(calc(var(--top) + var(--bajo)) var(--l) 0 calc(100cqw - var(--l) - var(--c)) round var(--r) var(--r) 0 0); }
+  .hero__franja :global(picture), .hero__franja :global(img) { width: 100%; height: 100%; }
+  .hero__franja :global(img) { object-fit: cover; object-position: center 25%; }
+  .hero__sombra { position: absolute; inset: 0; background: linear-gradient(0deg, rgba(23, 18, 24, .55), transparent 35%); opacity: 0; pointer-events: none; }
+  .hero__caption { position: absolute; left: max(1.5rem, calc((100cqw - var(--container)) / 2)); bottom: 2.25rem; z-index: 1; display: grid; margin: 0; color: var(--white); font: 700 clamp(1.8rem, 4cqw, 3.2rem)/1.05 var(--font-display); opacity: 0; }
+  .hero__caption span { margin-top: .4rem; font: 500 .9rem/1.3 var(--font-body); letter-spacing: .06em; text-transform: uppercase; }
+
+  /* Halo cálido detrás del arco: la página deja de ser blanco puro */
+  .hero__halo {
+    position: absolute;
+    left: 50%;
+    top: calc(var(--top) - 4rem);
+    z-index: 0;
+    width: calc(var(--w) * 2.1);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, #efe0f3 0%, #f8eee9 42%, rgba(250, 247, 243, 0) 100%);
+    translate: -50% 0;
+    pointer-events: none;
+  }
+
+
+  /* Ave y ruta punteada entre la frase y el arco */
+  .hero__ave {
+    position: absolute;
+    z-index: 2;
+    left: 42%;
+    top: calc(var(--header-h) - 1rem);
+    width: clamp(220px, 22cqw, 320px);
+    color: var(--violet);
+    pointer-events: none;
+    overflow: visible;
+  }
+  .hero__ruta { color: rgba(117, 40, 139, .45); }
+
+  @media (max-width: 900px) {
+    .hero__stage { --top: clamp(27rem, 54svh, 29rem); --w: calc(100cqw - 2rem); --bajo: 1.5rem; min-height: 600px; }
+    .hero__top { grid-template-columns: 1fr; grid-template-rows: var(--header-h) 1fr auto; grid-template-areas: 'logo' 'heading' 'side'; row-gap: 1.25rem; padding-bottom: 1.5rem; }
+    .hero__logo :global(.brand) { width: 130px; }
+    .hero h1 { font-size: clamp(2.6rem, 11.5cqw, 4rem); white-space: normal; }
+    .hero__side p { font-size: 1rem; line-height: 1.55; margin-bottom: 1rem; }
+    /* La foto vertical cabe justo en la pantalla: se agranda para que el arco enmarque personas y árboles */
+    .hero__franja :global(img) { height: 140%; object-position: center top; }
+    .hero__caption { bottom: 6.5rem; }
+    .hero__ave { left: auto; right: 1rem; top: calc(var(--header-h) + .25rem); width: 170px; }
+  }
+  @media (max-width: 640px) {
+    .hero__stage { --top: 0px; height: auto; min-height: 0; }
+    .hero__top { height: auto; grid-template-rows: var(--header-h) auto auto; row-gap: 1rem; padding-bottom: 1.5rem; }
+    .hero__heading, .hero__side { align-self: start; }
+    .hero__kicker { margin-bottom: .75rem; font-size: .72rem; }
+    .hero h1 { font-size: clamp(2.4rem, 11.5cqw, 4rem); }
+    .hero__side p { max-width: 36ch; }
+    .hero__actions { gap: .6rem 1rem; }
+    .hero__actions .btn { padding-inline: 1rem; }
+    .hero__link { font-size: .95rem; }
+    .hero__window { position: relative; height: clamp(14rem, 40svh, 23rem); }
+    .hero__franja :global(img) { height: 100%; object-position: center 45%; }
+    .hero__ave { width: 120px; top: 5.25rem; opacity: .7; }
+  }
+  /* Móviles bajos: no hay franja libre sobre el titular */
+  @media (max-width: 900px) and (max-height: 720px) {
+    .hero__ave { display: none; }
+  }
+
+  /* Entrada al cargar, con temática de bosque:
+     las palabras brotan desde su línea, las franjas crecen desde el suelo como árboles,
+     la ruta de las aves se dibuja y al final llegan las aves. Unos 1,8 s en total. */
+  .hero__palabra { display: inline-block; overflow: hidden; padding-bottom: .14em; margin-bottom: -.14em; vertical-align: bottom; }
+  .hero__palabra > span { display: inline-block; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .hero__kicker, .hero__palabra > span, .hero__sub, .hero__side, .hero__franja :global(picture), .hero__ruta, .hero__pajaro2, .hero__pajaro path {
+      animation-duration: .8s;
+      animation-timing-function: cubic-bezier(.2, .8, .2, 1);
+      animation-fill-mode: both;
+    }
+    .hero__kicker { animation-name: entrada-aparecer; animation-duration: .5s; }
+    .hero__palabra > span { animation-name: entrada-brotar; animation-delay: calc(.15s + var(--i) * .1s); }
+    .hero__sub { animation-name: entrada-subir; animation-delay: .5s; }
+    .hero__side { animation-name: entrada-subir; animation-delay: .65s; }
+    .hero__franja :global(picture) { animation-name: entrada-crecer; animation-duration: 1s; animation-delay: .35s; }
+    .hero__franja--izq :global(picture), .hero__franja--der :global(picture) { animation-delay: .2s; }
+    .hero__franja--centro :global(picture) { animation-delay: 0s; }
+    .hero:not(.hero--lista) .hero__franja :global(picture) { animation-play-state: paused; }
+    :global(.no-js) .hero__franja :global(picture) { animation: none; }
+    .hero__ruta { animation-name: entrada-trazar; animation-duration: .9s; animation-delay: .9s; animation-timing-function: ease-out; }
+    .hero__pajaro path, .hero__pajaro2 { animation-name: entrada-aparecer; animation-duration: .5s; animation-delay: 1.5s; }
+  }
+
+  @keyframes entrada-aparecer { from { opacity: 0; } }
+  @keyframes entrada-brotar { from { translate: 0 110%; } }
+  @keyframes entrada-subir { from { opacity: 0; translate: 0 1rem; } }
+  @keyframes entrada-crecer { from { clip-path: inset(100% 0 0 0); } to { clip-path: inset(0 0 0 0); } }
+  @keyframes entrada-trazar { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+</style>

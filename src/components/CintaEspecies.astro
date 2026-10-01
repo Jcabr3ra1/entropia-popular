@@ -1,0 +1,47 @@
+---
+import { frutales, nativasEnIncorporacion, nativasEnPropagacion } from '../data/sitio';
+
+// Nombres reales del vivero. Decorativa: el listado completo está en «Detalles y precios».
+const especies = [...nativasEnPropagacion, ...frutales, ...nativasEnIncorporacion];
+---
+
+<section class="cinta" aria-label="Especies del vivero">
+  <p class="sr-only">Algunas especies del vivero: {especies.join(', ')}.</p>
+  <div class="cinta__ventana" aria-hidden="true">
+  <div class="cinta__pista">
+    {[0, 1].map(() => (
+      <ul class="cinta__lista">
+        {especies.map((e, i) => <li class:list={{ 'cinta__item--alt': i % 3 === 1 }}>{e}</li>)}
+      </ul>
+    ))}
+  </div>
+  </div>
+</section>
+
+<style>
+  /* Franja tranquila: fondo lila suave, texto en tinta, bordes finos */
+  .cinta {
+    overflow: hidden;
+    padding-block: 1.1rem;
+    border-block: 1px solid rgba(117, 40, 139, .14);
+    color: var(--ink);
+    background: var(--violet-soft);
+  }
+  /* Solo el texto se desvanece en los extremos para no cortarse en seco */
+  .cinta__ventana {
+    overflow: hidden;
+    mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  }
+  .cinta__pista { display: flex; width: max-content; animation: cinta-correr 180s linear infinite; }
+  .cinta:hover .cinta__pista { animation-play-state: paused; }
+  .cinta__lista { display: flex; flex: 0 0 auto; margin: 0; padding: 0; list-style: none; }
+  .cinta__lista li { display: flex; align-items: center; white-space: nowrap; font: 700 clamp(1.05rem, 1.5vw, 1.3rem)/1.3 var(--font-display); }
+  .cinta__lista li::after { content: ''; width: .35rem; height: .35rem; margin-inline: clamp(1rem, 2vw, 1.6rem); border-radius: 50%; background: var(--red); }
+  .cinta__lista li.cinta__item--alt { color: var(--violet); font-style: italic; }
+
+  @keyframes cinta-correr { to { translate: -50% 0; } }
+  @media (prefers-reduced-motion: reduce) {
+    .cinta__pista { animation: none; }
+  }
+</style>

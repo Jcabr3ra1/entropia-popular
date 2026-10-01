@@ -1,0 +1,101 @@
+---
+import Brand from './Brand.astro';
+import WhatsAppIcon from './WhatsAppIcon.astro';
+import { contacto, waLink, mensajesWa } from '../data/sitio';
+const mensaje = 'Hola, Entropia Popular. Quiero información sobre el sendero o el vivero.';
+const enInicio = Astro.url.pathname === '/';
+---
+<footer class="footer" id="contacto">
+  <div class="container">
+    {enInicio && <div class="footer__cierre">
+      <p class="footer__kicker">Vereda La Cañada · El Agrado, Huila</p>
+      <h2 class="footer__titulo">Nos vemos en <span class="scribble">La Cañada.</span></h2>
+      <div class="footer__acciones">
+        <a class="btn btn--primary" href={waLink(mensajesWa.pasadia)} target="_blank" rel="noopener" data-asistente="pasadia">Planear mi visita</a>
+        <a class="footer__link" href={waLink(mensajesWa.plantas)} target="_blank" rel="noopener" data-asistente="plantas">Pedir plantas</a>
+      </div>
+    </div>}
+
+    <ul class="footer__datos" aria-label="Datos de contacto">
+      <li><span>WhatsApp</span><a href={waLink(mensaje)} target="_blank" rel="noopener">{contacto.whatsappVisible}<span class="sr-only"> (abre en una pestaña nueva)</span></a></li>
+      <li><span>Correo</span><a href={'mailto:' + contacto.correo}>{contacto.correo}</a></li>
+      <li><span>Dirección</span><p>{contacto.vereda}, {contacto.municipio}, {contacto.departamento}</p></li>
+      <li><span>Facebook</span><a href={contacto.facebook} target="_blank" rel="noopener">Entropia Popular<span class="sr-only"> (abre en una pestaña nueva)</span></a></li>
+    </ul>
+
+    <nav class="footer__nav" aria-label="Enlaces del pie de página">
+      <a href={enInicio ? '#nosotros' : '/#nosotros'}>Nosotros</a>
+      <a href={enInicio ? '#ofrecemos' : '/#ofrecemos'} data-tab-target="sendero">Sendero</a>
+      <a href={enInicio ? '#ofrecemos' : '/?ver=vivero#ofrecemos'} data-tab-target="vivero">Vivero</a>
+      <a href={enInicio ? '#galeria' : '/#galeria'}>Galería</a>
+      <a href={waLink(mensajesWa.general)} target="_blank" rel="noopener" data-asistente="">Hacer solicitud</a>
+    </nav>
+
+    <div class="footer__bottom">
+      <Brand />
+      <p>© {new Date().getFullYear()} {contacto.nombre} · Precios y disponibilidad sujetos a confirmación.</p>
+      <a class="footer__arriba" href={enInicio ? '#inicio' : '/#inicio'}>Volver arriba ↑</a>
+    </div>
+  </div>
+
+  <a class="whatsapp-float" href={waLink(mensajesWa.general)} target="_blank" rel="noopener" aria-label="Escribir a Entropia Popular por WhatsApp">
+    <WhatsAppIcon size={28} />
+  </a>
+</footer>
+
+<script>
+  const flotante = document.querySelector<HTMLElement>('.whatsapp-float');
+  const secciones = ['#contacto'].map((selector) => document.querySelector(selector)).filter(Boolean) as Element[];
+  if (flotante && 'IntersectionObserver' in window) {
+    const visibles = new Set<Element>();
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => entry.isIntersecting ? visibles.add(entry.target) : visibles.delete(entry.target));
+      flotante.classList.toggle('is-hidden', visibles.size > 0);
+    }, { threshold: 0.01 });
+    secciones.forEach((section) => observer.observe(section));
+  }
+</script>
+
+<style>
+  /* Cierre con arco superior blanco sobre el crema de los videos */
+  .footer { position: relative; z-index: 2; padding-top: clamp(2.5rem, 5vw, 4rem); background: var(--white); }
+  .footer::before { content: ''; position: absolute; left: 0; right: 0; top: calc(-1 * clamp(2.5rem, 7vw, 5.5rem)); height: calc(clamp(2.5rem, 7vw, 5.5rem) + 1px); border-radius: 50% 50% 0 0 / 100% 100% 0 0; background: var(--white); pointer-events: none; }
+
+  .footer__cierre { display: grid; justify-items: center; text-align: center; padding-bottom: clamp(3rem, 6vw, 4.5rem); }
+  .footer__kicker { margin: 0 0 1rem; color: var(--red-deep); font-size: .8rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+  .footer__titulo { margin: 0 0 2rem; color: var(--ink); font: 700 clamp(2.6rem, 6.5vw, 5.5rem)/1 var(--font-display); letter-spacing: -.035em; }
+  .footer__acciones { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: .75rem 1.75rem; }
+  .footer__link { min-height: 44px; display: inline-flex; align-items: center; color: var(--ink); font-weight: 600; text-underline-offset: .3rem; }
+  .footer__link:hover { color: var(--red-deep); }
+
+  .footer__datos { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 0; padding: 0; list-style: none; border-block: 1px solid var(--border); }
+  .footer__datos li { display: grid; align-content: start; gap: .3rem; padding: 1.5rem 1.25rem 1.5rem 0; }
+  .footer__datos li + li { padding-left: 1.25rem; border-left: 1px solid var(--border); }
+  .footer__datos span:first-child { color: var(--text-soft); font-size: .78rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
+  .footer__datos a { min-height: 44px; display: inline-flex; align-items: center; }
+  .footer__datos a, .footer__datos p { margin: 0; color: var(--ink); font-size: .95rem; font-weight: 500; overflow-wrap: anywhere; text-decoration: none; }
+  .footer__datos a:hover { color: var(--red-deep); text-decoration: underline; }
+
+  .footer__nav { display: flex; flex-wrap: wrap; justify-content: center; gap: .25rem 2rem; padding-block: 1.5rem; }
+  .footer__nav a { min-height: 44px; display: inline-flex; align-items: center; color: var(--ink); font: 700 1.05rem/1.2 var(--font-display); text-decoration: none; }
+  .footer__nav a:hover { color: var(--red-deep); }
+
+  .footer__bottom { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem 2rem; padding-block: 1.5rem 2.5rem; border-top: 1px solid var(--border); }
+  .footer__bottom :global(.brand) { width: 130px; }
+  .footer__bottom p { flex: 1; margin: 0; color: var(--text-soft); font-size: .82rem; text-align: center; }
+  .footer__arriba { min-height: 44px; display: inline-flex; align-items: center; color: var(--ink); font-size: .88rem; font-weight: 600; text-underline-offset: .3rem; }
+
+  @media (max-width: 900px) {
+    .footer__datos { grid-template-columns: 1fr 1fr; }
+    .footer__datos li:nth-child(3) { padding-left: 0; border-left: 0; }
+    .footer__datos li:nth-child(n + 3) { border-top: 1px solid var(--border); }
+  }
+  @media (max-width: 560px) {
+    .footer__datos { grid-template-columns: 1fr; }
+    .footer__datos li, .footer__datos li + li { padding: 1.1rem 0; border-left: 0; }
+    .footer__datos li + li { border-top: 1px solid var(--border); }
+    .footer__nav { justify-content: flex-start; gap: .25rem 1.5rem; }
+    .footer__bottom { flex-direction: column; align-items: flex-start; }
+    .footer__bottom p { text-align: left; }
+  }
+</style>

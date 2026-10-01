@@ -1,0 +1,33 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import Servicios from '../components/Servicios.astro';
+import Ofrecemos from '../components/Ofrecemos.astro';
+import Nosotros from '../components/Nosotros.astro';
+import VideoCarousel from '../components/VideoCarousel.astro';
+import CintaEspecies from '../components/CintaEspecies.astro';
+import Footer from '../components/Footer.astro';
+import Asistente from '../components/Asistente.astro';
+---
+
+<BaseLayout
+  title="Entropia Popular | Sendero y vivero comunitario en El Agrado, Huila"
+  description="Camine el Bosque Seco Tropical con la comunidad de La Cañada. Conozca el sendero, el vivero de árboles nativos y las opciones para solicitar plantas o una fecha."
+>
+  <Header logo={false} />
+  <main id="contenido" tabindex="-1">
+    <Hero />
+    <CintaEspecies />
+    <Servicios />
+    <Ofrecemos />
+    <Nosotros />
+    <VideoCarousel />
+  </main>
+  <Footer />
+  <Asistente />
+</BaseLayout>
+
+<script>
+  import '../scripts/tabs.ts';
+</script>

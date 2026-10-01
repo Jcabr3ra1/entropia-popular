@@ -1,0 +1,15 @@
+---
+import { Image } from 'astro:assets';
+import logo from '../assets/logo-entropia-popular.png';
+
+interface Props { light?: boolean }
+const { light = false } = Astro.props;
+---
+<a class:list={['brand', { 'brand--light': light }]} href={Astro.url.pathname === '/' ? '#inicio' : '/#inicio'} aria-label="Entropia Popular, volver al inicio">
+  <Image src={logo} width={400} widths={[200, 400]} sizes="200px" format="png" alt="" loading="eager" class="brand__image" />
+</a>
+<style>
+  .brand { width: 200px; flex: 0 0 auto; display: block; text-decoration: none; }
+  .brand__image { width: 100%; height: auto; }
+  @media (max-width: 560px) { .brand { width: 160px; } }
+</style>

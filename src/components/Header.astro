@@ -1,0 +1,265 @@
+---
+import Brand from './Brand.astro';
+import Icon from './Icon.astro';
+import { contacto, waLink, mensajesWa } from '../data/sitio';
+
+interface Props { logo?: boolean }
+const { logo = true } = Astro.props;
+const enInicio = Astro.url.pathname === '/';
+const links = [
+  { href: enInicio ? '#nosotros' : '/#nosotros', label: 'Nosotros', key: 'nosotros' },
+  { href: enInicio ? '#ofrecemos' : '/#ofrecemos', label: 'Sendero', key: 'sendero', tab: 'sendero' },
+  { href: enInicio ? '#ofrecemos' : '/?ver=vivero#ofrecemos', label: 'Vivero', key: 'vivero', tab: 'vivero' },
+  { href: enInicio ? '#galeria' : '/#galeria', label: 'Galería', key: 'galeria' },
+  { href: '#contacto', label: 'Contacto', key: 'contacto' },
+];
+---
+
+<!-- Sin barra de navegación: solo el logo arriba; el menú vive en el botón redondo -->
+{logo && (
+  <header class="nav" data-nav>
+    <div class="container nav__bar">
+      <Brand />
+    </div>
+  </header>
+)}
+
+<div class="progreso" aria-hidden="true"></div>
+
+<!-- El botón de abrir se oculta mientras está visible el panel -->
+<button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu-panel" data-nav-toggle>
+  <span class="sr-only" data-nav-label>Abrir menú</span>
+  <span class="menu-btn__bars" aria-hidden="true"><span></span><span></span></span>
+</button>
+
+<div class="menu-fondo" data-menu-fondo aria-hidden="true"></div>
+
+<!-- Panel con borde curvo (inspirado en el «Curved Menu») -->
+<nav class="menu-panel" id="menu-panel" aria-label="Menú" data-menu inert>
+  <svg class="menu-panel__curva" aria-hidden="true" preserveAspectRatio="none" data-menu-curva><path data-menu-path /></svg>
+  <button class="menu-panel__close" type="button" aria-label="Cerrar menú" data-menu-close>
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="m6 6 12 12M18 6 6 18" /></svg>
+  </button>
+  <div class="menu-panel__body">
+    <div>
+      <p class="menu-panel__label">Navegación</p>
+      <ul class="menu-panel__links">
+        {links.map((link, i) => (
+          <li style={`--i: ${i}`}>
+            <a href={link.href} data-nav-link={link.key} data-tab-target={link.tab} data-menu-link>
+              <span class="menu-panel__dot" aria-hidden="true"></span>{link.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+    <div class="menu-panel__foot">
+      <a class="btn btn--primary menu-panel__cta" href={waLink(mensajesWa.general)} target="_blank" rel="noopener" data-asistente="" data-menu-link>Hacer solicitud <Icon name="arrow" size={18} /></a>
+      <ul class="menu-panel__social" aria-label="Contacto">
+        <li><a href={contacto.facebook} target="_blank" rel="noopener">Facebook<span class="sr-only"> (abre en una pestaña nueva)</span></a></li>
+        <li><a href={`mailto:${contacto.correo}`}>Correo</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>('[data-nav-toggle]');
+  const label = document.querySelector<HTMLElement>('[data-nav-label]');
+  const panel = document.querySelector<HTMLElement>('[data-menu]');
+  const close = document.querySelector<HTMLButtonElement>('[data-menu-close]');
+  const fondoMenu = document.querySelector<HTMLElement>('[data-menu-fondo]');
+  const curva = document.querySelector<SVGSVGElement>('[data-menu-curva]');
+  const path = document.querySelector<SVGPathElement>('[data-menu-path]');
+  const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-nav-link]'));
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const fondoPagina = () => [document.querySelector('main'), document.querySelector('footer.footer'), document.querySelector('.whatsapp-float')].filter(Boolean) as HTMLElement[];
+
+  // Borde curvo: el punto de control va de -100 (curva hacia afuera) a 100 (recto)
+  const dibujar = (control: number) => {
+    const h = window.innerHeight;
+    curva?.setAttribute('viewBox', `0 0 100 ${h}`);
+    path?.setAttribute('d', `M100 0 L100 ${h} Q${control} ${h / 2} 100 0`);
+  };
+  let animacion = 0;
+  const easing = (t: number) => (t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+  const animarCurva = (desde: number, hasta: number, duracion = 900) => {
+    cancelAnimationFrame(animacion);
+    if (reduce.matches) { dibujar(hasta); return; }
+    const inicio = performance.now();
+    const paso = (ahora: number) => {
+      const t = Math.min(1, (ahora - inicio) / duracion);
+      dibujar(desde + (hasta - desde) * easing(t));
+      if (t < 1) animacion = requestAnimationFrame(paso);
+    };
+    animacion = requestAnimationFrame(paso);
+  };
+  dibujar(-100);
+
+  const isOpen = () => toggle?.getAttribute('aria-expanded') === 'true';
+  const setOpen = (open: boolean, devolverFoco = false) => {
+    if (!toggle || !panel) return;
+    toggle.setAttribute('aria-expanded', String(open));
+    if (label) label.textContent = 'Abrir menú';
+    document.documentElement.classList.toggle('menu-abierto', open);
+    panel.inert = !open;
+    toggle.inert = open;
+    fondoPagina().forEach((el) => { el.inert = open; });
+    animarCurva(open ? -100 : 100, open ? 100 : -100, open ? 900 : 380);
+    if (open) close?.focus({ preventScroll: true });
+    else if (devolverFoco) toggle.focus();
+  };
+  toggle?.addEventListener('click', () => setOpen(!isOpen()));
+  close?.addEventListener('click', () => setOpen(false, true));
+  fondoMenu?.addEventListener('click', () => setOpen(false, true));
+  document.addEventListener('pointerdown', (event) => {
+    if (!isOpen() || !panel || !toggle || !(event.target instanceof Node)) return;
+    if (!panel.contains(event.target) && !toggle.contains(event.target)) setOpen(false, true);
+  }, true);
+  panel?.querySelectorAll('[data-menu-link]').forEach((link) => link.addEventListener('click', () => setOpen(false)));
+  document.addEventListener('keydown', (event) => {
+    if (!isOpen() || !panel || !toggle) return;
+    if (event.key === 'Escape') { setOpen(false, true); return; }
+    if (event.key !== 'Tab') return;
+    // El foco circula dentro del panel; el botón exterior está oculto.
+    const focusables = Array.from(panel.querySelectorAll<HTMLElement>('a, button'));
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+    if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+    else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+  });
+  window.addEventListener('resize', () => dibujar(isOpen() ? 100 : -100), { passive: true });
+
+  // Sección activa: punto rojo en el panel
+  let seccion = '';
+  let pestana = 'sendero';
+  const actualizar = () => {
+    const clave = seccion === 'ofrecemos' ? pestana : seccion;
+    links.forEach((link) => {
+      if (link.dataset.navLink === clave) link.setAttribute('aria-current', 'true');
+      else link.removeAttribute('aria-current');
+    });
+  };
+  document.addEventListener('tabs:change', (event) => {
+    const detalle = (event as CustomEvent<string>).detail;
+    if (detalle === 'sendero' || detalle === 'vivero') { pestana = detalle; actualizar(); }
+  });
+  const secciones = ['inicio', 'nosotros', 'ofrecemos', 'galeria', 'solicitud', 'contacto']
+    .map((id) => document.getElementById(id))
+    .filter(Boolean) as HTMLElement[];
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => { if (entry.isIntersecting) { seccion = entry.target.id; actualizar(); } });
+    }, { rootMargin: '-45% 0px -50% 0px' });
+    secciones.forEach((s) => observer.observe(s));
+  }
+  window.addEventListener('resize', actualizar, { passive: true });
+  document.fonts?.ready.then(actualizar);
+</script>
+
+<style>
+  /* Logo arriba, sin barra (se va con el scroll) */
+  .nav { position: absolute; top: 0; left: 0; z-index: 100; width: 100%; pointer-events: none; }
+  .nav__bar { min-height: var(--header-h); display: flex; align-items: center; }
+  .nav__bar :global(a) { pointer-events: auto; }
+
+  /* Barra de progreso de lectura (animada en scroll.css) */
+  .progreso { position: fixed; top: 0; left: 0; z-index: 101; width: 100%; height: 3px; background: linear-gradient(90deg, var(--red), var(--violet)); transform-origin: left center; scale: 0 1; pointer-events: none; }
+
+  /* Botón redondo */
+  .menu-btn {
+    position: fixed;
+    top: max(1rem, env(safe-area-inset-top));
+    right: max(1.5rem, env(safe-area-inset-right));
+    z-index: 130;
+    width: 3rem;
+    height: 3rem;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    color: var(--white);
+    background: var(--ink);
+    box-shadow: 0 14px 30px -14px rgba(23, 18, 24, .6);
+    transition: background-color .2s ease;
+  }
+  :global(html.menu-abierto) .menu-btn { visibility: hidden; pointer-events: none; }
+  .menu-btn:focus-visible { outline-color: var(--violet); }
+  .menu-btn:hover { background: var(--violet); }
+  .menu-btn__bars { display: grid; gap: 6px; justify-items: center; }
+  .menu-btn__bars span { width: 20px; height: 2px; border-radius: 2px; background: currentColor; }
+
+  /* Fondo oscurecido */
+  .menu-fondo { position: fixed; inset: 0; z-index: 110; background: rgba(23, 18, 24, .45); opacity: 0; visibility: hidden; transition: opacity .3s ease, visibility .3s; }
+  :global(html.menu-abierto) .menu-fondo { opacity: 1; visibility: visible; }
+
+  /* Panel curvo */
+  .menu-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 120;
+    width: min(460px, 88vw);
+    height: 100dvh;
+    color: var(--white);
+    background: var(--ink);
+    translate: calc(100% + 100px) 0;
+    /* Al cerrar sale rápido y sin pausa inicial; al abrir conserva la entrada suave */
+    transition: translate .4s cubic-bezier(.4, 0, .2, 1);
+  }
+  :global(html.menu-abierto) .menu-panel { translate: 0 0; transition: translate .8s cubic-bezier(.76, 0, .24, 1); }
+  .menu-panel__curva { position: absolute; top: 0; left: -99px; width: 100px; height: 100%; fill: var(--ink); pointer-events: none; }
+  .menu-panel__close {
+    position: absolute;
+    top: max(1rem, env(safe-area-inset-top));
+    right: max(1.5rem, env(safe-area-inset-right));
+    z-index: 1;
+    width: 3rem;
+    height: 3rem;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, .25);
+    border-radius: .75rem;
+    color: var(--white);
+    background: var(--ink);
+    transition: background-color .2s ease, border-color .2s ease;
+  }
+  .menu-panel__close:hover { border-color: var(--white); background: var(--violet-deep); }
+  .menu-panel__close:focus-visible { outline-color: var(--white); }
+  .menu-panel__body { height: 100%; display: flex; flex-direction: column; justify-content: space-between; overflow-y: auto; padding: calc(var(--header-h) + 2rem) clamp(1.75rem, 5vw, 3.5rem) 2.25rem; }
+
+  .menu-panel__label { margin: 0 0 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(255, 255, 255, .18); color: rgba(255, 255, 255, .65); font-size: .75rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }
+  .menu-panel__links { display: grid; gap: .35rem; margin: 0; padding: 0; list-style: none; }
+  .menu-panel__links li { translate: 80px 0; opacity: 0; transition: translate .25s ease, opacity .2s ease; transition-delay: 0s; }
+  :global(html.menu-abierto) .menu-panel__links li { translate: 0 0; opacity: 1; transition: translate .6s cubic-bezier(.76, 0, .24, 1), opacity .4s ease; transition-delay: calc(.25s + var(--i) * .06s); }
+  .menu-panel__links a { position: relative; min-height: 56px; display: flex; align-items: center; gap: 1rem; color: var(--white); font: 700 clamp(2rem, 6vw, 2.9rem)/1.1 var(--font-display); text-decoration: none; transition: color .2s ease; }
+  .menu-panel__links a:hover, .menu-panel__links a:focus-visible { color: #f4d9fa; }
+  .menu-panel__dot { width: .55rem; height: .55rem; flex: 0 0 auto; border-radius: 50%; background: var(--red); scale: 0; transition: scale .3s cubic-bezier(.76, 0, .24, 1); }
+  .menu-panel__links:not(:hover):not(:has(a:focus-visible)) a[aria-current='true'] .menu-panel__dot,
+  .menu-panel__links a:hover .menu-panel__dot,
+  .menu-panel__links a:focus-visible .menu-panel__dot { scale: 1; }
+
+  .menu-panel__foot { display: grid; gap: 1.5rem; margin-top: 2.5rem; }
+  .menu-panel__cta { justify-self: start; }
+  .menu-panel__social { display: flex; flex-wrap: wrap; gap: .5rem 1.5rem; margin: 0; padding: 1rem 0 0; border-top: 1px solid rgba(255, 255, 255, .18); list-style: none; }
+  .menu-panel__social a { min-height: 44px; display: inline-flex; align-items: center; gap: .4rem; color: rgba(255, 255, 255, .8); font-size: .85rem; text-decoration: none; }
+  .menu-panel__social a:hover { color: var(--white); text-decoration: underline; }
+
+  :global(html.menu-abierto) { overflow: hidden; }
+
+  @media (max-width: 900px) {
+    .menu-btn, .menu-panel__close { right: max(1rem, env(safe-area-inset-right)); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .menu-panel, .menu-panel__links li, .menu-btn, .menu-panel__close, .menu-fondo { transition: none; }
+  }
+
+  /* Sin JavaScript: el panel se muestra como lista estática al final del encabezado */
+  :global(.no-js) .menu-btn, :global(.no-js) .menu-panel__close, :global(.no-js) .menu-fondo { display: none; }
+  :global(.no-js) .menu-panel { position: static; width: auto; height: auto; translate: none; }
+  :global(.no-js) .menu-panel__curva { display: none; }
+  :global(.no-js) .menu-panel__links li { translate: none; opacity: 1; }
+</style>
