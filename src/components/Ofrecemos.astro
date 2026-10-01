@@ -21,7 +21,7 @@ const catalogo = [
   <div class="container">
     <div class="section-head reveal">
       <span class="kicker">Detalles y precios</span>
-      <h2 class="title" id="ofrecemos-title">Caminarlo o <span class="scribble scribble--violet">sembrarlo</span></h2>
+      <h2 class="title" id="ofrecemos-title">Recorridos y <span class="scribble scribble--violet">venta de plantas</span></h2>
     </div>
 
     <div class="ofrecemos__tabs" data-tabs>
@@ -70,7 +70,7 @@ const catalogo = [
       <div class="tabs__panel oferta" role="tabpanel" id="panel-vivero" aria-labelledby="tab-vivero" tabindex="0" hidden>
         <div class="oferta__principal">
           <h3>Catálogo del vivero</h3>
-          <p class="oferta__lead">Propagamos a partir de semilla recolectada en nuestro territorio. Cada plántula se entrega embolsada, endurecida y lista para siembra.</p>
+          <p class="oferta__lead">Vendemos plántulas nativas y frutales propagadas con semilla del territorio. Se entregan embolsadas, endurecidas y listas para que las siembre en su terreno.</p>
           <div class="catalogo">
             {catalogo.map((grupo) => (
               <section class:list={['catalogo__grupo', `catalogo__grupo--${grupo.id}`]} aria-labelledby={`cat-${grupo.id}`}>

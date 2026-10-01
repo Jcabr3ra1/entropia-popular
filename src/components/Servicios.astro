@@ -20,12 +20,12 @@ const caminos = [
   {
     clave: 'vivero',
     etiqueta: 'Vivero',
-    titulo: 'Sembrar con nosotros',
-    texto: 'Árboles nativos y frutales propagados con semilla del territorio, con asesoría y seguimiento después de la siembra.',
+    titulo: 'Plantas para su terreno',
+    texto: 'Venta de plantas nativas y frutales, con asesoría para elegir las especies que necesita y acompañamiento después de la compra.',
     datos: [`${nativasEnPropagacion.length} nativas`, `${frutales.length} frutales`, `Desde ${formatoPesos(precios.plantula)}`],
     foto: vivero,
     alt: 'Integrantes de la comunidad recorren las hileras de plántulas bajo la malla de sombra del vivero.',
-    accion: { texto: 'Pedir plantas', href: waLink(mensajesWa.plantas) },
+    accion: { texto: 'Comprar plantas', href: waLink(mensajesWa.plantas) },
   },
 ];
 ---
@@ -35,9 +35,9 @@ const caminos = [
     <div class="servicios__head reveal">
       <div>
         <span class="kicker">Lo que hacemos</span>
-        <h2 class="title" id="servicios-title">Dos caminos para conocer el bosque</h2>
+        <h2 class="title" id="servicios-title">Conozca el sendero y el vivero</h2>
       </div>
-      <p>Venga a caminar el sendero con la comunidad o siembre el bosque en su tierra con plántulas nativas y frutales cultivadas aquí mismo.</p>
+      <p>Recorra el sendero con la comunidad o compre plantas nativas y frutales para su terreno.</p>
     </div>
 
     <ul class="caminos">
@@ -69,7 +69,7 @@ const caminos = [
         <path d="M33 22c0-8 4.3-12.5 12-12.5 0 8-4.6 12.5-12 12.5Z" fill="#d10818" />
         <path d="M25.5 41.5h15" fill="none" stroke="#211b22" stroke-width="2.6" stroke-linecap="round" />
       </svg>
-      <span>El recorrido del pasadía pasa por el vivero: en una misma visita conoce los dos.</span>
+      <span>Durante el pasadía conocerá el vivero donde producimos las plantas que vendemos.</span>
     </p>
   </div>
 </section>

@@ -52,7 +52,7 @@ const grupos = [
         <button class="asis__opcion asis__opcion--vivero" type="button" data-elegir="plantas">
           <span class="asis__opcion-num" aria-hidden="true">02</span>
           <span class="asis__opcion-texto">
-            <strong>Sembrar con el vivero</strong>
+            <strong>Comprar plantas del vivero</strong>
             <small>{nativasEnPropagacion.length} nativas · {frutales.length} frutales · desde {formatoPesos(precios.plantula)}</small>
           </span>
           <span class="asis__opcion-flecha" aria-hidden="true"><Icon name="arrow" size={22} /></span>
@@ -230,7 +230,7 @@ const grupos = [
       } else {
         const ps = plantasElegidas();
         const total = ps.reduce((s, p) => s + p.cantidad, 0);
-        l.push('Hola, Entropia Popular. Me gustaría pedir estas plantas del vivero:', '');
+        l.push('Hola, Entropia Popular. Me gustaría comprar estas plantas del vivero:', '');
         ps.forEach((p) => l.push(`• ${p.especie}: ${p.cantidad} ${p.cantidad === 1 ? 'plántula' : 'plántulas'}${p.tipo === 'nativo-consulta' ? ' (si está disponible)' : ''}`));
         l.push('', `Total: ${total} ${total === 1 ? 'plántula' : 'plántulas'}`);
         const lugar = $<HTMLInputElement>('[data-asis-lugar]').value.trim();
@@ -261,7 +261,7 @@ const grupos = [
     }
 
     function resumen() {
-      $<HTMLElement>('[data-asis-res-modo]').textContent = modo === 'pasadia' ? 'Caminar el sendero (pasadía de aves)' : 'Pedir plantas del vivero';
+      $<HTMLElement>('[data-asis-res-modo]').textContent = modo === 'pasadia' ? 'Caminar el sendero (pasadía de aves)' : 'Comprar plantas del vivero';
       const ul = $<HTMLUListElement>('[data-asis-res-detalle]');
       ul.replaceChildren();
       const add = (t: string) => { const li = document.createElement('li'); li.textContent = t; ul.append(li); };

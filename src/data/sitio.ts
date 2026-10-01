@@ -92,5 +92,5 @@ export const incluidoVivero = [
 export const mensajesWa = {
   general: 'Hola, Entropia Popular. Tengo una pregunta sobre el sendero o el vivero.',
   pasadia: 'Hola, Entropia Popular. Me gustaría proponer una fecha para el pasadía de observación de aves.',
-  plantas: 'Hola, Entropia Popular. Me gustaría pedir plantas del vivero.',
+  plantas: 'Hola, Entropia Popular. Me gustaría comprar plantas del vivero.',
 };
