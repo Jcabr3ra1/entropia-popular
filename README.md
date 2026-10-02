@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://la-canada-reverdece.vercel.app/">Visite La Cañada Reverdece</a>
+  <a href="https://huilareverdece.com/">Visite La Cañada Reverdece</a>
 </p>
 
 ## Quiénes somos
