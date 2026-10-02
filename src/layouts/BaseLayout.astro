@@ -36,7 +36,6 @@ const schema = {
     addressCountry: 'CO',
   },
   areaServed: `${contacto.municipio}, ${contacto.departamento}`,
-  sameAs: [contacto.facebook],
   ...(canonical ? { url: canonical } : {}),
 };
 ---
@@ -49,7 +48,7 @@ const schema = {
     <title>{title}</title>
     <meta name="description" content={description} />
     {canonical && <link rel="canonical" href={canonical} />}
-    <meta name="theme-color" content="#ffffff" />
+    <meta name="theme-color" content="#0b432a" />
     <meta name="geo.region" content="CO-HUI" />
     <meta name="geo.placename" content="El Agrado, Huila" />
     <meta property="og:type" content="website" />
@@ -61,7 +60,9 @@ const schema = {
     {ogUrl && <meta property="og:image" content={ogUrl} />}
     {ogUrl && <meta property="og:image:alt" content="Grupo caminando por un sendero del bosque seco mientras observa aves" />}
     <meta name="twitter:card" content="summary_large_image" />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-48.png" type="image/png" sizes="48x48" />
+    <link rel="icon" href="/favicon.png" type="image/png" sizes="192x192" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <script is:inline>document.documentElement.classList.remove('no-js');</script>
     <script is:inline type="application/ld+json" set:html={JSON.stringify(schema)} />
   </head>

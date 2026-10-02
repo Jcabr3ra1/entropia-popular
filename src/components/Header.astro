@@ -56,7 +56,7 @@ const links = [
     <div class="menu-panel__foot">
       <a class="btn btn--primary menu-panel__cta" href={waLink(mensajesWa.general)} target="_blank" rel="noopener" data-asistente="" data-menu-link>Hacer solicitud <Icon name="arrow" size={18} /></a>
       <ul class="menu-panel__social" aria-label="Contacto">
-        <li><a href={contacto.facebook} target="_blank" rel="noopener">Facebook<span class="sr-only"> (abre en una pestaña nueva)</span></a></li>
+        <li><a href={waLink(mensajesWa.general)} target="_blank" rel="noopener">WhatsApp {contacto.whatsappVisible}<span class="sr-only"> (abre en una pestaña nueva)</span></a></li>
         <li><a href={`mailto:${contacto.correo}`}>Correo</a></li>
       </ul>
     </div>
@@ -164,7 +164,7 @@ const links = [
   .nav__bar :global(a) { pointer-events: auto; }
 
   /* Barra de progreso de lectura (animada en scroll.css) */
-  .progreso { position: fixed; top: 0; left: 0; z-index: 101; width: 100%; height: 3px; background: linear-gradient(90deg, var(--red), var(--violet)); transform-origin: left center; scale: 0 1; pointer-events: none; }
+  .progreso { position: fixed; top: 0; left: 0; z-index: 101; width: 100%; height: 3px; background: linear-gradient(90deg, var(--red), var(--leaf), var(--blue)); transform-origin: left center; scale: 0 1; pointer-events: none; }
 
   /* Botón redondo */
   .menu-btn {
@@ -181,17 +181,17 @@ const links = [
     border-radius: 50%;
     color: var(--white);
     background: var(--ink);
-    box-shadow: 0 14px 30px -14px rgba(23, 18, 24, .6);
+    box-shadow: 0 14px 30px -14px rgba(10, 30, 19, .6);
     transition: background-color .2s ease;
   }
   :global(html.menu-abierto) .menu-btn { visibility: hidden; pointer-events: none; }
-  .menu-btn:focus-visible { outline-color: var(--violet); }
-  .menu-btn:hover { background: var(--violet); }
+  .menu-btn:focus-visible { outline-color: var(--red); }
+  .menu-btn:hover { background: var(--blue-deep); }
   .menu-btn__bars { display: grid; gap: 6px; justify-items: center; }
   .menu-btn__bars span { width: 20px; height: 2px; border-radius: 2px; background: currentColor; }
 
   /* Fondo oscurecido */
-  .menu-fondo { position: fixed; inset: 0; z-index: 110; background: rgba(23, 18, 24, .45); opacity: 0; visibility: hidden; transition: opacity .3s ease, visibility .3s; }
+  .menu-fondo { position: fixed; inset: 0; z-index: 110; background: rgba(10, 30, 19, .45); opacity: 0; visibility: hidden; transition: opacity .3s ease, visibility .3s; }
   :global(html.menu-abierto) .menu-fondo { opacity: 1; visibility: visible; }
 
   /* Panel curvo */
@@ -235,7 +235,7 @@ const links = [
   .menu-panel__links li { translate: 80px 0; opacity: 0; transition: translate .25s ease, opacity .2s ease; transition-delay: 0s; }
   :global(html.menu-abierto) .menu-panel__links li { translate: 0 0; opacity: 1; transition: translate .6s cubic-bezier(.76, 0, .24, 1), opacity .4s ease; transition-delay: calc(.25s + var(--i) * .06s); }
   .menu-panel__links a { position: relative; min-height: 56px; display: flex; align-items: center; gap: 1rem; color: var(--white); font: 700 clamp(2rem, 6vw, 2.9rem)/1.1 var(--font-display); text-decoration: none; transition: color .2s ease; }
-  .menu-panel__links a:hover, .menu-panel__links a:focus-visible { color: #f4d9fa; }
+  .menu-panel__links a:hover, .menu-panel__links a:focus-visible { color: #cfe8c2; }
   .menu-panel__dot { width: .55rem; height: .55rem; flex: 0 0 auto; border-radius: 50%; background: var(--red); scale: 0; transition: scale .3s cubic-bezier(.76, 0, .24, 1); }
   .menu-panel__links:not(:hover):not(:has(a:focus-visible)) a[aria-current='true'] .menu-panel__dot,
   .menu-panel__links a:hover .menu-panel__dot,

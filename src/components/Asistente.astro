@@ -1,15 +1,23 @@
 ---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
 import Icon from './Icon.astro';
-import { contacto, formatoPesos, frutales, mensajesWa, nativasEnIncorporacion, nativasEnPropagacion, pasadia, precios, waLink } from '../data/sitio';
+import { contacto, formatoPesos, frutales, mensajesWa, nativasEnPropagacion, pasadia, precios, waLink } from '../data/sitio';
+import { plantas } from '../data/vivero';
 
 // Asistente «Hablemos de su plan». Lo abre cualquier enlace con [data-asistente]
 // (valor: 'pasadia', 'plantas' o vacío para empezar por la elección).
 // Sin JavaScript esos enlaces llevan directo a WhatsApp con un mensaje base.
+// El paso «Elija sus plantas» es la tienda del vivero: fichas con foto, precio y «Agregar».
+// Las fotos son de referencia (src/assets/especies); a WhatsApp solo va el texto del pedido.
 const grupos = [
-  { id: 'nativas', titulo: 'Nativas del bosque seco', tipo: 'nativo', especies: nativasEnPropagacion },
-  { id: 'frutales', titulo: 'Frutales', tipo: 'frutal', especies: frutales },
-  { id: 'pronto', titulo: 'Llegando pronto · consultar disponibilidad', tipo: 'nativo-consulta', especies: nativasEnIncorporacion },
-];
+  { id: 'nativa', filtro: 'Nativas', titulo: 'Nativas del bosque seco', tipo: 'nativo' },
+  { id: 'frutal', filtro: 'Frutales', titulo: 'Frutales', tipo: 'frutal' },
+  { id: 'pronto', filtro: 'Llegando pronto', titulo: 'Llegando pronto · consultar disponibilidad', tipo: 'nativo-consulta' },
+].map((g) => ({ ...g, plantas: plantas.filter((p) => p.grupo === g.id) }));
+const fotos = import.meta.glob<{ default: ImageMetadata }>('../assets/especies/*.jpg', { eager: true });
+const foto = (archivo: string | null) => (archivo ? fotos[`../assets/especies/${archivo}.jpg`]?.default : undefined);
+const idDe = (s: string) => `pl-${s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
 ---
 
 <dialog
@@ -94,23 +102,50 @@ const grupos = [
         <label for="asis-buscar">Buscar especie</label>
         <input id="asis-buscar" type="search" placeholder="Ej.: guayacán, limón…" autocomplete="off" data-asis-buscar />
       </div>
+      <div class="filtros-asis" role="group" aria-label="Filtrar plantas">
+        <button type="button" aria-pressed="true" data-filtro="todas">Todas <span>{plantas.length}</span></button>
+        {grupos.map((g) => <button type="button" aria-pressed="false" data-filtro={g.id}>{g.filtro} <span>{g.plantas.length}</span></button>)}
+      </div>
       {grupos.map((grupo) => (
-        <div class="catalogo-asis" data-grupo>
+        <div class="catalogo-asis" data-grupo={grupo.id}>
           <h3>{grupo.titulo}</h3>
-          <ul>
-            {grupo.especies.map((especie) => (
-              <li class="planta" data-planta={especie} data-tipo={grupo.tipo}>
-                <span class="planta__nombre" id={`pl-${especie.replace(/\s+/g, '-')}`}>{especie}</span>
-                <div class="contador" role="group" aria-labelledby={`pl-${especie.replace(/\s+/g, '-')}`}>
-                  <button type="button" data-paso-cantidad="-1"><span aria-hidden="true">−</span><span class="sr-only">Una menos de {especie}</span></button>
-                  <input type="number" inputmode="numeric" min="0" step="1" value="0" aria-label={`Cantidad de ${especie}`} data-cantidad />
-                  <button type="button" data-paso-cantidad="1"><span aria-hidden="true">+</span><span class="sr-only">Una más de {especie}</span></button>
-                </div>
-              </li>
-            ))}
+          <ul class="tienda-asis">
+            {grupo.plantas.map((p) => {
+              const img = foto(p.archivo);
+              return (
+                <li class="planta" data-planta={p.nombre} data-tipo={grupo.tipo}>
+                  <figure class="planta__foto">
+                    {img ? (
+                      <Image src={img} widths={[240, 400, 560]} sizes="(max-width: 640px) 110px, 270px" alt={`${p.nombre}, foto de referencia de la especie`} quality={62} loading="lazy" />
+                    ) : (
+                      <div class="planta__sinfoto" aria-hidden="true"><span>{p.nombre.charAt(0)}</span></div>
+                    )}
+                    <figcaption>
+                      {p.credito ? <>Foto: <a href={p.credito.fuente} target="_blank" rel="noopener">{p.credito.autor}</a> · {p.credito.licencia}</> : 'Foto pendiente'}
+                    </figcaption>
+                  </figure>
+                  <div class="planta__info">
+                    <h4 class="planta__nombre" id={idDe(p.nombre)}>{p.nombre}</h4>
+                    <p class="planta__cientifico">{p.cientifico ?? 'Nombre científico por confirmar'}</p>
+                    <p class="planta__descripcion">{p.descripcion}</p>
+                    {p.usos.length > 0 && <p class="planta__usos"><span class="sr-only">Usos: </span>{p.usos.join(' · ')}</p>}
+                    <div class="planta__pie">
+                      <p class="planta__precio"><strong>{formatoPesos(precios.plantula)}</strong> {grupo.id === 'pronto' ? 'si hay disponibilidad' : 'c/u'}</p>
+                      <button type="button" class="planta__agregar" data-agregar>Agregar<span class="sr-only"> {p.nombre}</span></button>
+                      <div class="contador planta__contador" role="group" aria-labelledby={idDe(p.nombre)}>
+                        <button type="button" data-paso-cantidad="-1"><span aria-hidden="true">−</span><span class="sr-only">Una menos de {p.nombre}</span></button>
+                        <input type="number" inputmode="numeric" min="0" step="1" value="0" aria-label={`Cantidad de ${p.nombre}`} data-cantidad />
+                        <button type="button" data-paso-cantidad="1"><span aria-hidden="true">+</span><span class="sr-only">Una más de {p.nombre}</span></button>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         </div>
       ))}
+      <p class="asis__nota-fotos">Las fotos son de referencia de cada especie (Wikimedia Commons, licencia libre); no son plantas del vivero. Las plántulas se entregan pequeñas, en bolsa y listas para sembrar.</p>
       <p class="asis__vacio" data-asis-sin-resultados hidden>No encontramos esa especie. Puede pedirla en el comentario del paso siguiente.</p>
     </section>
 
@@ -223,14 +258,14 @@ const grupos = [
       const nota = $<HTMLTextAreaElement>('[data-asis-nota]').value.trim();
       if (modo === 'pasadia') {
         const n = entero(personas.value);
-        l.push('Hola, Entropia Popular. Me gustaría hacer el pasadía de observación de aves en el sendero.', '');
+        l.push('Hola, equipo de La Cañada Reverdece. Me gustaría hacer el pasadía de observación de aves en el sendero.', '');
         l.push(`• Fecha que prefiero: ${fecha.value ? formatoFechaCompleta(fecha.value) : 'por definir'}`);
         if (fechaAlt.value) l.push(`• Otra fecha posible: ${formatoFechaCompleta(fechaAlt.value)}`);
         l.push(`• Número de personas: ${n || 'por definir'}`);
       } else {
         const ps = plantasElegidas();
         const total = ps.reduce((s, p) => s + p.cantidad, 0);
-        l.push('Hola, Entropia Popular. Me gustaría comprar estas plantas del vivero:', '');
+        l.push('Hola, equipo de La Cañada Reverdece. Me gustaría comprar estas plantas del vivero:', '');
         ps.forEach((p) => l.push(`• ${p.especie}: ${p.cantidad} ${p.cantidad === 1 ? 'plántula' : 'plántulas'}${p.tipo === 'nativo-consulta' ? ' (si está disponible)' : ''}`));
         l.push('', `Total: ${total} ${total === 1 ? 'plántula' : 'plántulas'}`);
         const lugar = $<HTMLInputElement>('[data-asis-lugar]').value.trim();
@@ -289,6 +324,8 @@ const grupos = [
       titulo.textContent = typeof t === 'string' ? t : t[modo];
       atras.hidden = n === 1;
       seguir.hidden = n !== 2;
+      seguir.textContent = modo === 'plantas' ? 'Revisar mi lista' : 'Continuar';
+      dialog.classList.toggle('is-tienda', n === 2 && modo === 'plantas');
       enviar.hidden = n !== 3;
       $<HTMLElement>('[data-asis-aviso]').hidden = n !== 3;
       if (n === 3) {
@@ -299,7 +336,7 @@ const grupos = [
       cuerpo.scrollTop = 0;
       // Foco al primer control útil del paso
       const primero = n === 1 ? dialog.querySelector<HTMLElement>(`[data-elegir="${modo}"]`)
-        : n === 2 ? (modo === 'pasadia' ? fecha : buscar)
+        : n === 2 ? (modo === 'pasadia' ? fecha : $<HTMLElement>('[data-filtro][aria-pressed="true"]'))
         : $<HTMLElement>(modo === 'plantas' ? '[data-asis-lugar]' : '[data-asis-nombre]');
       primero?.focus({ preventScroll: true });
     }
@@ -315,13 +352,15 @@ const grupos = [
       } else {
         const invalida = $$<HTMLInputElement>('[data-cantidad]').find((input) => !cantidadValida(input));
         if (invalida) {
+          filtro = 'todas';
+          invalida.closest('[data-planta]')?.classList.add('con-cantidad');
           buscar.value = '';
           buscar.dispatchEvent(new Event('input', { bubbles: true }));
           const especie = invalida.closest<HTMLElement>('[data-planta]')?.dataset.planta;
           return errorEn(invalida, `La cantidad de ${especie} debe ser un número entero de 0 en adelante.`);
         }
         if (!plantasElegidas().length) {
-          error.textContent = 'Elija al menos una planta con el botón +.'; buscar.focus(); return false;
+          error.textContent = 'Agregue al menos una planta a su lista.'; buscar.focus(); return false;
         }
       }
       return true;
@@ -365,32 +404,51 @@ const grupos = [
       const n = Math.max(0, (entero(input.value) || 0) + Number(b.dataset.pasoCantidad));
       input.value = String(n);
       li.classList.toggle('is-elegida', n > 0);
+      if (n === 0) { li.classList.remove('con-cantidad'); li.querySelector<HTMLElement>('[data-agregar]')!.focus(); }
+      limpiarErrores();
+      actualizarBarra();
+    }));
+    $$<HTMLButtonElement>('[data-agregar]').forEach((b) => b.addEventListener('click', () => {
+      const li = b.closest<HTMLLIElement>('[data-planta]')!;
+      li.querySelector<HTMLInputElement>('[data-cantidad]')!.value = '1';
+      li.classList.add('is-elegida', 'con-cantidad');
+      li.querySelector<HTMLElement>('[data-paso-cantidad="1"]')!.focus();
       limpiarErrores();
       actualizarBarra();
     }));
     dialog.addEventListener('input', (e) => {
       const t = e.target as HTMLElement;
       limpiarErrores();
-      if (t.matches('[data-cantidad]')) t.closest('[data-planta]')?.classList.toggle('is-elegida', (entero((t as HTMLInputElement).value) || 0) > 0);
+      if (t.matches('[data-cantidad]')) {
+        const li = t.closest('[data-planta]');
+        li?.classList.toggle('is-elegida', (entero((t as HTMLInputElement).value) || 0) > 0);
+        if ((t as HTMLInputElement).value.trim() !== '0') li?.classList.add('con-cantidad');
+      }
       actualizarBarra();
       if (paso === 3) enviar.href = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje())}`;
     });
 
-    // Buscador del catálogo
-    const normal = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
-    buscar.addEventListener('input', () => {
+    // Buscador y filtros del catálogo
+    const normal = (s: string) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    const botonesFiltro = $$<HTMLButtonElement>('[data-filtro]');
+    let filtro = 'todas';
+    function filtrar() {
       const q = normal(buscar.value.trim());
+      botonesFiltro.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.filtro === filtro)));
       let visibles = 0;
       $$<HTMLElement>('[data-grupo]').forEach((g) => {
         let enGrupo = 0;
+        const enFiltro = filtro === 'todas' || g.dataset.grupo === filtro;
         g.querySelectorAll<HTMLElement>('[data-planta]').forEach((li) => {
-          const ok = !q || normal(li.dataset.planta!).includes(q);
+          const ok = enFiltro && (!q || normal(li.dataset.planta!).includes(q));
           li.hidden = !ok; if (ok) enGrupo++;
         });
         g.hidden = enGrupo === 0; visibles += enGrupo;
       });
       $<HTMLElement>('[data-asis-sin-resultados]').hidden = visibles > 0;
-    });
+    }
+    buscar.addEventListener('input', filtrar);
+    botonesFiltro.forEach((b) => b.addEventListener('click', () => { filtro = b.dataset.filtro!; filtrar(); }));
 
     // Enviar: se abre WhatsApp con el mensaje armado; nunca decimos que se envió
     enviar.addEventListener('click', (event) => {
@@ -412,10 +470,10 @@ const grupos = [
     border: 0;
     color: var(--text);
     background: var(--white);
-    box-shadow: -30px 0 80px -40px rgba(23, 18, 24, .6);
+    box-shadow: -30px 0 80px -40px rgba(10, 30, 19, .6);
   }
   .asis[open] { display: flex; flex-direction: column; animation: asis-entrar .45s cubic-bezier(.2, .8, .2, 1); }
-  .asis::backdrop { background: rgba(23, 18, 24, .5); }
+  .asis::backdrop { background: rgba(10, 30, 19, .5); }
   @keyframes asis-entrar { from { translate: 40px 0; opacity: 0; } }
   :global(html.asis-abierto) { overflow: hidden; }
 
@@ -429,7 +487,7 @@ const grupos = [
   .asis__progreso p { margin: 0 0 .55rem; color: var(--text-soft); font-size: .82rem; }
   .asis__progreso p span:first-child { color: var(--ink); font-weight: 600; }
   .asis__linea { height: 3px; overflow: hidden; border-radius: 3px; background: var(--border); }
-  .asis__linea span { display: block; height: 100%; background: linear-gradient(90deg, var(--red), var(--violet)); transform-origin: left; scale: .3333 1; transition: scale .45s cubic-bezier(.2, .8, .2, 1); }
+  .asis__linea span { display: block; height: 100%; background: linear-gradient(90deg, var(--red), var(--leaf), var(--blue)); transform-origin: left; scale: .3333 1; transition: scale .45s cubic-bezier(.2, .8, .2, 1); }
 
   .asis__cuerpo { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 1.5rem 1.75rem; }
   .asis__paso { display: grid; gap: 1.25rem; }
@@ -439,7 +497,7 @@ const grupos = [
   /* Opciones como filas editoriales (mismo lenguaje que el menú curvo y el catálogo) */
   .asis__opciones { display: grid; border-top: 1px solid var(--border); }
   .asis__opcion {
-    --tinta: var(--red);
+    --tinta: var(--violet);
     position: relative;
     isolation: isolate;
     overflow: hidden;
@@ -454,7 +512,7 @@ const grupos = [
     background: none;
     text-align: left;
   }
-  .asis__opcion--vivero { --tinta: var(--violet); }
+  .asis__opcion--vivero { --tinta: var(--brown); }
   /* Franja de color que llena la fila */
   .asis__opcion::before { content: ''; position: absolute; inset: 0; z-index: -1; background: var(--tinta); scale: 0 1; transform-origin: left; transition: scale .45s cubic-bezier(.2, .8, .2, 1); }
   .asis__opcion-num { align-self: start; padding-top: .55rem; color: var(--tinta); font-size: .8rem; font-weight: 700; letter-spacing: .08em; transition: color .3s ease; }
@@ -477,7 +535,7 @@ const grupos = [
   .asis__campo label, .asis__etiqueta { color: var(--ink); font-size: .9rem; font-weight: 600; }
   .asis__campo label span { color: var(--text-soft); font-weight: 400; }
   .asis__campo input[type='date'], .asis__campo input[type='text'], .asis__campo input[type='search'], .asis__campo textarea {
-    width: 100%; min-height: 50px; padding: .7rem .9rem; border: 1px solid rgba(33, 27, 34, .2); border-radius: .75rem; color: var(--ink); background: var(--white); font-size: 16px;
+    width: 100%; min-height: 50px; padding: .7rem .9rem; border: 1px solid rgba(16, 41, 28, .2); border-radius: .75rem; color: var(--ink); background: var(--white); font-size: 16px;
   }
   .asis__campo textarea { min-height: 80px; resize: vertical; }
   .asis__campos-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
@@ -485,7 +543,7 @@ const grupos = [
   .asis__referencia:empty { display: none; }
 
   /* Contadores − n + */
-  .contador { display: inline-flex; align-items: center; border: 1px solid rgba(33, 27, 34, .2); border-radius: 999px; background: var(--white); }
+  .contador { display: inline-flex; align-items: center; border: 1px solid rgba(16, 41, 28, .2); border-radius: 999px; background: var(--white); }
   .contador button { width: 44px; height: 44px; display: grid; place-items: center; padding: 0; border: 0; border-radius: 50%; color: var(--ink); background: none; font-size: 1.35rem; line-height: 1; }
   .contador button:hover { color: var(--red-deep); background: var(--cream); }
   .contador input { width: 2.6rem; padding: 0; border: 0; background: none; color: var(--ink); font: 600 16px/1 var(--font-body); text-align: center; -moz-appearance: textfield; }
@@ -495,13 +553,41 @@ const grupos = [
   .contador--grande input { width: 3.5rem; font-size: 1.4rem; }
 
   /* Catálogo */
-  .catalogo-asis h3 { margin: .5rem 0 .4rem; padding-bottom: .4rem; border-bottom: 2px solid var(--ink); color: var(--ink); font-size: .85rem; font-weight: 700; }
+  /* Tienda dentro del asistente: el panel se ensancha en este paso */
+  .asis.is-tienda { width: min(100%, 940px); }
+  .filtros-asis { display: flex; flex-wrap: wrap; gap: .25rem 1.4rem; margin-top: .25rem; border-bottom: 1px solid var(--border); }
+  .filtros-asis button { position: relative; min-height: 44px; padding: .4rem 0; border: 0; color: var(--text-soft); background: none; cursor: pointer; font: 700 1rem/1.2 var(--font-display); }
+  .filtros-asis span { color: var(--red-deep); font: 600 .72rem/1 var(--font-body); vertical-align: .3em; }
+  .filtros-asis button::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 3px; border-radius: 3px; background: var(--red); scale: 0 1; transition: scale .25s cubic-bezier(.2, .8, .2, 1); }
+  .filtros-asis button:hover, .filtros-asis button[aria-pressed='true'] { color: var(--ink); }
+  .filtros-asis button[aria-pressed='true']::after { scale: 1 1; }
+
+  .catalogo-asis h3 { margin: .75rem 0 .9rem; padding-bottom: .4rem; border-bottom: 2px solid var(--ink); color: var(--ink); font-size: .85rem; font-weight: 700; }
   .catalogo-asis[hidden], .planta[hidden] { display: none; }
-  .catalogo-asis ul { margin: 0; padding: 0; list-style: none; }
-  .planta { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .35rem 0 .35rem .1rem; border-bottom: 1px solid var(--border); }
-  .planta__nombre { color: var(--ink); font: 700 1.05rem/1.3 var(--font-display); }
+  .tienda-asis { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 230px), 1fr)); gap: 1.6rem 1.25rem; margin: 0; padding: 0; list-style: none; }
+  .planta { display: flex; flex-direction: column; }
+  .planta__foto { margin: 0; }
+  .planta__foto :global(img), .planta__sinfoto { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; border-radius: var(--radius-sm); object-fit: cover; background: var(--leaf-soft); }
+  .planta__sinfoto { display: grid; place-items: center; background: repeating-linear-gradient(-45deg, var(--leaf-soft) 0 12px, var(--cream) 12px 24px); }
+  .planta__sinfoto span { color: var(--violet); opacity: .35; font: 700 3.5rem/1 var(--font-display); }
+  .planta__foto figcaption { margin-top: .35rem; color: var(--text-soft); font-size: .68rem; line-height: 1.35; }
+  .planta__foto figcaption a { color: inherit; }
+  .planta__info { display: flex; flex: 1; flex-direction: column; padding-top: .45rem; }
+  .planta__nombre { margin: 0; color: var(--ink); font: 700 1.2rem/1.25 var(--font-display); }
+  .planta__cientifico { margin: .1rem 0 .45rem; color: var(--red-deep); font-size: .8rem; font-style: italic; }
+  .planta__descripcion { margin: 0; font-size: .84rem; line-height: 1.5; }
+  .planta__usos { margin: .45rem 0 0; color: var(--violet); font: 600 .76rem/1.4 var(--font-body); }
+  .planta__pie { display: flex; align-items: center; justify-content: space-between; gap: .5rem; margin-top: auto; padding-top: .75rem; }
+  .planta__precio { margin: 0; color: var(--text-soft); font-size: .76rem; }
+  .planta__precio strong { color: var(--ink); font: 700 1.05rem/1.2 var(--font-display); }
+  .planta__agregar { min-height: 44px; padding: .45rem 1.1rem; border: 1.5px solid var(--ink); border-radius: 99px; color: var(--ink); background: none; cursor: pointer; font: 600 .88rem/1 var(--font-body); transition: color .2s, background .2s; }
+  .planta__agregar:hover { color: var(--white); background: var(--ink); }
+  .planta__contador { display: none; }
+  .planta.con-cantidad .planta__agregar { display: none; }
+  .planta.con-cantidad .planta__contador { display: inline-flex; }
   .planta.is-elegida .planta__nombre { color: var(--red-deep); }
   .planta.is-elegida .contador { border-color: var(--red); }
+  .asis__nota-fotos { margin: 1.5rem 0 0; padding-left: .8rem; border-left: 3px solid var(--violet); color: var(--text-soft); font-size: .78rem; }
   .asis__vacio { margin: 0; font-size: .9rem; }
 
   /* Paso 3 */
@@ -539,6 +625,16 @@ const grupos = [
     .asis__pie { padding: .8rem 1.1rem 1rem; }
     .asis__opcion { grid-template-columns: 2rem 1fr auto; gap: .75rem; padding: 1.35rem .75rem 1.35rem .6rem; }
     .asis__campos-2 { grid-template-columns: 1fr; }
+    .filtros-asis { flex-wrap: nowrap; gap: 1.1rem; overflow-x: auto; scrollbar-width: none; }
+    .filtros-asis button { flex: none; }
+    /* Fichas en fila: foto a la izquierda */
+    .tienda-asis { grid-template-columns: 1fr; gap: 1.1rem; }
+    .planta { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: .9rem; padding-bottom: 1.1rem; border-bottom: 1px solid var(--border); }
+    .planta__foto :global(img), .planta__sinfoto { aspect-ratio: 1; }
+    .planta__sinfoto span { font-size: 2.5rem; }
+    .planta__info { padding-top: 0; }
+    .planta__nombre { font-size: 1.1rem; }
+    .planta__descripcion { font-size: .8rem; }
   }
   @media (prefers-reduced-motion: reduce) {
     .asis[open] { animation: none; }

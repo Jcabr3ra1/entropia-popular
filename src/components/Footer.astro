@@ -1,8 +1,8 @@
 ---
 import Brand from './Brand.astro';
 import WhatsAppIcon from './WhatsAppIcon.astro';
-import { contacto, waLink, mensajesWa } from '../data/sitio';
-const mensaje = 'Hola, Entropia Popular. Quiero información sobre el sendero o el vivero.';
+import { contacto, waLink, mensajesWa, impulsor } from '../data/sitio';
+const mensaje = mensajesWa.general;
 const enInicio = Astro.url.pathname === '/';
 ---
 <footer class="footer" id="contacto">
@@ -20,7 +20,6 @@ const enInicio = Astro.url.pathname === '/';
       <li><span>WhatsApp</span><a href={waLink(mensaje)} target="_blank" rel="noopener">{contacto.whatsappVisible}<span class="sr-only"> (abre en una pestaña nueva)</span></a></li>
       <li><span>Correo</span><a href={'mailto:' + contacto.correo}>{contacto.correo}</a></li>
       <li><span>Dirección</span><p>{contacto.vereda}, {contacto.municipio}, {contacto.departamento}</p></li>
-      <li><span>Facebook</span><a href={contacto.facebook} target="_blank" rel="noopener">Entropia Popular<span class="sr-only"> (abre en una pestaña nueva)</span></a></li>
     </ul>
 
     <nav class="footer__nav" aria-label="Enlaces del pie de página">
@@ -33,7 +32,7 @@ const enInicio = Astro.url.pathname === '/';
 
     <div class="footer__bottom">
       <Brand />
-      <p>© {new Date().getFullYear()} {contacto.nombre} · Precios y disponibilidad sujetos a confirmación.</p>
+      <p>© {new Date().getFullYear()} {contacto.nombre} · Proyecto comunitario de la vereda La Cañada, con el impulso de <a href={impulsor.facebook} target="_blank" rel="noopener">{impulsor.nombre}<span class="sr-only"> (abre en una pestaña nueva)</span></a>. Precios y disponibilidad sujetos a confirmación.</p>
       <a class="footer__arriba" href={enInicio ? '#inicio' : '/#inicio'}>Volver arriba ↑</a>
     </div>
   </div>
@@ -68,7 +67,7 @@ const enInicio = Astro.url.pathname === '/';
   .footer__link { min-height: 44px; display: inline-flex; align-items: center; color: var(--ink); font-weight: 600; text-underline-offset: .3rem; }
   .footer__link:hover { color: var(--red-deep); }
 
-  .footer__datos { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 0; padding: 0; list-style: none; border-block: 1px solid var(--border); }
+  .footer__datos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0; padding: 0; list-style: none; border-block: 1px solid var(--border); }
   .footer__datos li { display: grid; align-content: start; gap: .3rem; padding: 1.5rem 1.25rem 1.5rem 0; }
   .footer__datos li + li { padding-left: 1.25rem; border-left: 1px solid var(--border); }
   .footer__datos span:first-child { color: var(--text-soft); font-size: .78rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
@@ -81,7 +80,7 @@ const enInicio = Astro.url.pathname === '/';
   .footer__nav a:hover { color: var(--red-deep); }
 
   .footer__bottom { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem 2rem; padding-block: 1.5rem 2.5rem; border-top: 1px solid var(--border); }
-  .footer__bottom :global(.brand) { width: 130px; }
+  .footer__bottom :global(.brand) { width: 120px; }
   .footer__bottom p { flex: 1; margin: 0; color: var(--text-soft); font-size: .82rem; text-align: center; }
   .footer__arriba { min-height: 44px; display: inline-flex; align-items: center; color: var(--ink); font-size: .88rem; font-weight: 600; text-underline-offset: .3rem; }
 

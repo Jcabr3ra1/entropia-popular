@@ -2,7 +2,8 @@
 // explicado en CONTENT_REVIEW.md y debe validarse con la comunidad.
 
 export const contacto = {
-  nombre: 'Entropia Popular',
+  // Nombre provisional del proyecto comunitario (confirmar el definitivo con la comunidad)
+  nombre: 'La Cañada Reverdece',
   unidad: 'Unidad productiva asociativa de la vereda La Cañada',
   // Número usado por el botón y la tienda del sitio anterior. Revisar.
   whatsapp: '573123373394',
@@ -11,10 +12,15 @@ export const contacto = {
   telefono: '573138475461',
   telefonoVisible: '313 847 5461',
   correo: 'mccpgarzon@gmail.com',
-  facebook: 'https://www.facebook.com/profile.php?id=100069171400785',
   vereda: 'Vereda La Cañada',
   municipio: 'El Agrado',
   departamento: 'Huila',
+};
+
+// Entropia Popular impulsa el proyecto, pero no lo opera: se reconoce en el pie de página.
+export const impulsor = {
+  nombre: 'Entropia Popular',
+  facebook: 'https://www.facebook.com/profile.php?id=100069171400785',
 };
 
 export const waLink = (mensaje?: string) =>
@@ -90,7 +96,7 @@ export const incluidoVivero = [
 // Mensajes base de WhatsApp. Sin JavaScript, los botones abren WhatsApp con estos textos;
 // con JavaScript abren el asistente «Hablemos de su plan», que arma el mensaje completo.
 export const mensajesWa = {
-  general: 'Hola, Entropia Popular. Tengo una pregunta sobre el sendero o el vivero.',
-  pasadia: 'Hola, Entropia Popular. Me gustaría proponer una fecha para el pasadía de observación de aves.',
-  plantas: 'Hola, Entropia Popular. Me gustaría comprar plantas del vivero.',
+  general: 'Hola, equipo de La Cañada Reverdece. Tengo una pregunta sobre el sendero o el vivero.',
+  pasadia: 'Hola, equipo de La Cañada Reverdece. Me gustaría proponer una fecha para el pasadía de observación de aves.',
+  plantas: 'Hola, equipo de La Cañada Reverdece. Me gustaría comprar plantas del vivero.',
 };

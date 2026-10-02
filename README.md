@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="src/assets/logo-entropia-popular.png" alt="Logo de Entropia Popular" width="420">
+  <img src="src/assets/logo-la-canada-reverdece.png" alt="Logo de La Cañada Reverdece" width="420">
 </p>
 
-<h1 align="center">Entropia Popular</h1>
+<h1 align="center">La Cañada Reverdece</h1>
 
 <p align="center">
   <strong>Camine el bosque con quienes lo siembran.</strong><br>
@@ -11,7 +11,7 @@
 
 ## Quiénes somos
 
-Entropia Popular presenta el trabajo de una unidad productiva asociativa de la vereda La Cañada, en El Agrado, Huila. Somos familias campesinas que encontramos en el cuidado del territorio una forma de trabajar juntas, compartir lo que sabemos y generar oportunidades para nuestra comunidad.
+La Cañada Reverdece (nombre provisional) presenta el trabajo de una unidad productiva asociativa de la vereda La Cañada, en El Agrado, Huila. Somos familias campesinas que encontramos en el cuidado del territorio una forma de trabajar juntas, compartir lo que sabemos y generar oportunidades para nuestra comunidad.
 
 Nuestro lugar es el Bosque Seco Tropical del alto Magdalena. Aquí producimos plantas para la venta y ofrecemos recorridos guiados para conocer el bosque y las historias del territorio.
 
@@ -63,6 +63,6 @@ La conversación continúa en WhatsApp, donde confirmamos la disponibilidad y ac
 
 - [WhatsApp: 312 337 3394](https://wa.me/573123373394)
 - [Correo: mccpgarzon@gmail.com](mailto:mccpgarzon@gmail.com)
-- [Entropia Popular en Facebook](https://www.facebook.com/profile.php?id=100069171400785)
+- Proyecto impulsado por [Entropia Popular](https://www.facebook.com/profile.php?id=100069171400785)
 
 **Nos vemos en La Cañada.**
