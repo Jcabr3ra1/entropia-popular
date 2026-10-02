@@ -6,17 +6,17 @@ import Brand from './Brand.astro';
 import sendero from '../assets/fotos/pasadia.jpeg';
 ---
 
-<!--
+{/*
   Hero «tríptico»: la foto del sendero aparece cortada en tres franjas verticales con espacio entre ellas.
   Con scroll (CSS nativo, ver scroll.css) las franjas se juntan hasta formar una sola foto a pantalla completa.
   Cada franja lleva la misma imagen a tamaño de escenario y se recorta con clip-path, así se alinean exactas.
   Sin soporte o con movimiento reducido queda el tríptico quieto.
--->
+*/}
 <section class="hero" id="inicio" aria-labelledby="hero-title">
   <div class="hero__stage">
     <div class="hero__halo" aria-hidden="true"></div>
 
-    <!-- Aves con su ruta punteada en la franja superior, sobre el titular -->
+    {/* Aves con su ruta punteada en la franja superior, sobre el titular */}
     <svg class="hero__ave" viewBox="0 0 320 160" aria-hidden="true" focusable="false">
       <path class="hero__ruta" d="M12 150 C 80 140, 120 60, 190 70 S 280 40, 296 22" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="2 9" stroke-linecap="round" />
       <g class="hero__pajaro" transform="translate(296 22)">

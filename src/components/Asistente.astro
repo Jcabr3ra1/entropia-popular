@@ -46,7 +46,7 @@ const idDe = (s: string) => `pl-${s.normalize('NFD').replace(/[\u0300-\u036f]/g,
   </header>
 
   <div class="asis__cuerpo" data-asis-cuerpo>
-    <!-- Paso 1: elegir -->
+    {/* Paso 1: elegir */}
     <section class="asis__paso" data-paso="1" aria-label="Paso 1: qué quiere hacer">
       <div class="asis__opciones">
         <button class="asis__opcion asis__opcion--sendero" type="button" data-elegir="pasadia">
@@ -72,7 +72,7 @@ const idDe = (s: string) => `pl-${s.normalize('NFD').replace(/[\u0300-\u036f]/g,
       </p>
     </section>
 
-    <!-- Paso 2: detalles del pasadía -->
+    {/* Paso 2: detalles del pasadía */}
     <section class="asis__paso" data-paso="2" data-detalle="pasadia" aria-label="Paso 2: detalles del pasadía" hidden>
       <div class="asis__campos-2">
         <div class="asis__campo">
@@ -96,7 +96,7 @@ const idDe = (s: string) => `pl-${s.normalize('NFD').replace(/[\u0300-\u036f]/g,
       <p class="asis__referencia" data-asis-ref-pasadia aria-live="polite"></p>
     </section>
 
-    <!-- Paso 2: catálogo de plantas -->
+    {/* Paso 2: catálogo de plantas */}
     <section class="asis__paso" data-paso="2" data-detalle="plantas" aria-label="Paso 2: elija sus plantas" hidden>
       <div class="asis__campo">
         <label for="asis-buscar">Buscar especie</label>
@@ -149,7 +149,7 @@ const idDe = (s: string) => `pl-${s.normalize('NFD').replace(/[\u0300-\u036f]/g,
       <p class="asis__vacio" data-asis-sin-resultados hidden>No encontramos esa especie. Puede pedirla en el comentario del paso siguiente.</p>
     </section>
 
-    <!-- Paso 3: revisar y enviar -->
+    {/* Paso 3: revisar y enviar */}
     <section class="asis__paso" data-paso="3" aria-label="Paso 3: revisar y enviar" hidden>
       <div class="resumen">
         <div class="resumen__fila">

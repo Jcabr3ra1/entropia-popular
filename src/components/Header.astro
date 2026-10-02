@@ -15,7 +15,7 @@ const links = [
 ];
 ---
 
-<!-- Sin barra de navegación: solo el logo arriba; el menú vive en el botón redondo -->
+{/* Sin barra de navegación: solo el logo arriba; el menú vive en el botón redondo */}
 {logo && (
   <header class="nav" data-nav>
     <div class="container nav__bar">
@@ -26,7 +26,7 @@ const links = [
 
 <div class="progreso" aria-hidden="true"></div>
 
-<!-- El botón de abrir se oculta mientras está visible el panel -->
+{/* El botón de abrir se oculta mientras está visible el panel */}
 <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu-panel" data-nav-toggle>
   <span class="sr-only" data-nav-label>Abrir menú</span>
   <span class="menu-btn__bars" aria-hidden="true"><span></span><span></span></span>
@@ -34,7 +34,7 @@ const links = [
 
 <div class="menu-fondo" data-menu-fondo aria-hidden="true"></div>
 
-<!-- Panel con borde curvo (inspirado en el «Curved Menu») -->
+{/* Panel con borde curvo (inspirado en el «Curved Menu») */}
 <nav class="menu-panel" id="menu-panel" aria-label="Menú" data-menu inert>
   <svg class="menu-panel__curva" aria-hidden="true" preserveAspectRatio="none" data-menu-curva><path data-menu-path /></svg>
   <button class="menu-panel__close" type="button" aria-label="Cerrar menú" data-menu-close>
