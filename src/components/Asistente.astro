@@ -461,6 +461,8 @@ const idDe = (s: string) => `pl-${s.normalize('NFD').replace(/[\u0300-\u036f]/g,
 
 <style>
   .asis {
+    position: fixed;
+    inset: 0;
     width: min(100%, 540px);
     max-width: none;
     height: 100dvh;
@@ -468,6 +470,8 @@ const idDe = (s: string) => `pl-${s.normalize('NFD').replace(/[\u0300-\u036f]/g,
     margin: 0 0 0 auto;
     padding: 0;
     border: 0;
+    overflow: hidden;
+    overscroll-behavior: none;
     color: var(--text);
     background: var(--white);
     box-shadow: -30px 0 80px -40px rgba(10, 30, 19, .6);
@@ -476,6 +480,10 @@ const idDe = (s: string) => `pl-${s.normalize('NFD').replace(/[\u0300-\u036f]/g,
   .asis::backdrop { background: rgba(10, 30, 19, .5); }
   @keyframes asis-entrar { from { translate: 40px 0; opacity: 0; } }
   :global(html.asis-abierto) { overflow: hidden; }
+  :global(html.asis-abierto body) { overflow: hidden; }
+
+  /* Solo el cuerpo se desplaza; encabezado y acciones permanecen visibles. */
+  .asis__head, .asis__pie { flex-shrink: 0; }
 
   .asis__head { display: grid; grid-template-columns: 1fr auto; gap: .5rem 1rem; padding: 1.5rem 1.75rem 1.1rem; border-bottom: 1px solid var(--border); }
   .asis__kicker { margin: 0 0 .25rem; color: var(--red-deep); font-size: .75rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
