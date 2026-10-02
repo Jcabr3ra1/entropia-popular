@@ -1,9 +1,7 @@
 import { defineConfig } from 'astro/config';
 
-// El dominio personalizado tiene prioridad sobre la dirección de producción de Vercel.
-const site = process.env.PUBLIC_SITE_URL || (process.env.VERCEL_PROJECT_PRODUCTION_URL
-  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-  : undefined);
+// El dominio personalizado tiene prioridad sobre la dirección pública del proyecto.
+const site = process.env.PUBLIC_SITE_URL || 'https://la-canada-reverdece.vercel.app';
 
 export default defineConfig({
   site,

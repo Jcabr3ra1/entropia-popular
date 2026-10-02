@@ -9,6 +9,10 @@
   Vereda La Cañada · El Agrado, Huila · Colombia
 </p>
 
+<p align="center">
+  <a href="https://la-canada-reverdece.vercel.app/">Visite La Cañada Reverdece</a>
+</p>
+
 ## Quiénes somos
 
 La Cañada Reverdece (nombre provisional) presenta el trabajo de una unidad productiva asociativa de la vereda La Cañada, en El Agrado, Huila. Somos familias campesinas que encontramos en el cuidado del territorio una forma de trabajar juntas, compartir lo que sabemos y generar oportunidades para nuestra comunidad.
