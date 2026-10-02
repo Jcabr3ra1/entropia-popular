@@ -1,5 +1,5 @@
 ---
-import { formatoPesos, frutales, incluidoVivero, nativasEnIncorporacion, nativasEnPropagacion, pasadia, precios, waLink, mensajesWa } from '../data/sitio';
+import { condiciones, formatoPesos, frutales, incluidoVivero, nativasEnIncorporacion, nativasEnPropagacion, nosotros, pasadia, precios, waLink, mensajesWa } from '../data/sitio';
 
 // Itinerario del pasadía. El orden sale del recorrido publicado; los horarios no se conocen (ver CONTENT_REVIEW.md).
 const itinerario = [
@@ -7,7 +7,7 @@ const itinerario = [
   { titulo: 'Sendero del bosque seco', texto: 'Caminamos el sendero interpretativo con guías de la vereda, que conocen cada árbol y su historia.' },
   { titulo: 'Observación de aves', texto: 'Con binoculares y telescopio buscamos las aves que viven en el Bosque Seco Tropical.' },
   { titulo: 'Vivero comunitario', texto: 'Conoce dónde germinan y crecen las plántulas que luego vuelven al bosque.' },
-  { titulo: 'Área en restauración', texto: 'Visitamos el lugar donde sembramos árboles nativos con trabajo comunitario.' },
+  { titulo: 'Área en restauración', texto: `Visitamos el lugar donde sembramos ${nosotros.logros[0].cifra} árboles nativos con trabajo comunitario.` },
 ];
 
 const catalogo = [
@@ -62,7 +62,7 @@ const catalogo = [
           <div class="boleto__corte" aria-hidden="true"></div>
           <p class="boleto__precio"><strong>{formatoPesos(precios.pasadiaPorPersona)}</strong> por persona · precio indicativo</p>
           <a class="btn btn--primary boleto__accion" href={waLink(mensajesWa.pasadia)} target="_blank" rel="noopener" data-asistente="pasadia">Proponer una fecha</a>
-          <p class="boleto__letra">La fecha se confirma por WhatsApp y se separa con pago anticipado.</p>
+          <p class="boleto__letra">{condiciones.recorrido}</p>
         </aside>
       </div>
 
@@ -91,7 +91,7 @@ const catalogo = [
           <dl class="boleto__datos">
             <div><dt>Pedido mínimo</dt><dd>1 plántula</dd></div>
             <div><dt>Entrega</dt><dd>Cerca de una semana, si la especie está en producción</dd></div>
-            <div><dt>Desde 24 plántulas</dt><dd>Pregunte por el descuento</dd></div>
+            <div><dt>Descuentos</dt><dd>A partir de 2 docenas (24 plántulas). Consulte el valor.</dd></div>
           </dl>
           <div class="boleto__corte" aria-hidden="true"></div>
           <p class="boleto__rotulo">Incluido en toda venta</p>
@@ -100,6 +100,7 @@ const catalogo = [
           <p class="boleto__precio"><strong>{formatoPesos(precios.plantula)}</strong> por plántula · precio indicativo</p>
           <a class="btn btn--primary boleto__accion" href={waLink(mensajesWa.plantas)} target="_blank" rel="noopener" data-asistente="plantas">Armar mi lista de plantas</a>
           <p class="boleto__letra">Confirmamos especies, cantidades, valor final y entrega antes de cualquier pago.</p>
+          <p class="boleto__letra">{condiciones.plantas}</p>
         </aside>
       </div>
     </div>

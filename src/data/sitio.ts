@@ -23,6 +23,14 @@ export const impulsor = {
   facebook: 'https://www.facebook.com/profile.php?id=100069171400785',
 };
 
+export const organizacion = 'Asociación de Trabajadores Campesinos del Huila — Subdirectiva El Agrado';
+
+export const condiciones = {
+  plantas: 'El pedido se paga antes del despacho o se deja un depósito para separarlo. El monto del depósito y las condiciones de entrega se acuerdan por WhatsApp.',
+  recorrido: 'La fecha se separa con pago anticipado. Las cancelaciones fuera del plazo acordado tienen recargo; el plazo y el valor se acuerdan por WhatsApp antes de reservar.',
+  descuento: 'Descuentos a partir de 2 docenas (24 plántulas). El valor del descuento se confirma por WhatsApp antes de pagar.',
+};
+
 export const waLink = (mensaje?: string) =>
   `https://wa.me/${contacto.whatsapp}${mensaje ? `?text=${encodeURIComponent(mensaje)}` : ''}`;
 
@@ -66,6 +74,8 @@ export const nosotros = {
   historia: [
     'Somos una unidad productiva asociativa de la vereda La Cañada, en El Agrado, Huila. Nuestro territorio hace parte del Bosque Seco Tropical del alto Magdalena, uno de los ecosistemas más amenazados del país y uno de los menos conocidos.',
     'Vivimos en la zona de influencia de la hidroeléctrica El Quimbo y hemos visto de cerca cómo cambia un territorio cuando se transforma su paisaje. De ahí salieron dos decisiones: montar un vivero de especies nativas y frutales, y abrir un sendero para conocer el bosque, sus aves y sus historias.',
+    'Con trabajo comunitario sembramos 400 árboles nativos, montamos un banco de semillas propio y formamos un equipo que monitorea la biodiversidad de la zona.',
+    'Trabajamos sin intermediarios: usted trata directamente con quien recolecta la semilla, cultiva la planta y guía el recorrido.',
   ],
   mision:
     'Producir y comercializar plántulas de especies nativas, frutales y ornamentales del Bosque Seco Tropical, y ofrecer recorridos guiados por nuestro sendero de interpretación. Lo hacemos como unidad productiva comunitaria: generamos ingresos para las familias campesinas de la vereda y, al mismo tiempo, material vegetal y conocimiento para restaurar el bosque de nuestra región.',
@@ -80,7 +90,7 @@ export const nosotros = {
     { titulo: 'Conocimiento del lugar', texto: 'Llevamos toda la vida aquí. Sabemos qué se da, en qué época y por qué.' },
   ],
   logros: [
-    { cifra: '+100', texto: 'árboles nativos sembrados con trabajo comunitario' },
+    { cifra: '400', texto: 'árboles nativos sembrados con trabajo comunitario' },
     { cifra: '17', texto: 'especies nativas en propagación en el vivero' },
     { cifra: '10', texto: 'personas como máximo por salida al sendero' },
   ],

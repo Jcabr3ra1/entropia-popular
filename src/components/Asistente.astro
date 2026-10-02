@@ -2,7 +2,7 @@
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 import Icon from './Icon.astro';
-import { contacto, formatoPesos, frutales, mensajesWa, nativasEnPropagacion, pasadia, precios, waLink } from '../data/sitio';
+import { condiciones, contacto, formatoPesos, frutales, mensajesWa, nativasEnPropagacion, pasadia, precios, waLink } from '../data/sitio';
 import { plantas } from '../data/vivero';
 
 // Asistente «Hablemos de su plan». Lo abre cualquier enlace con [data-asistente]
@@ -98,6 +98,7 @@ const idDe = (s: string) => `pl-${s.normalize('NFD').replace(/[\u0300-\u036f]/g,
 
     {/* Paso 2: catálogo de plantas */}
     <section class="asis__paso" data-paso="2" data-detalle="plantas" aria-label="Paso 2: elija sus plantas" hidden>
+      <p class="asis__ayuda">{condiciones.descuento}</p>
       <div class="asis__campo">
         <label for="asis-buscar">Buscar especie</label>
         <input id="asis-buscar" type="search" placeholder="Ej.: guayacán, limón…" autocomplete="off" data-asis-buscar />
@@ -173,6 +174,11 @@ const idDe = (s: string) => `pl-${s.normalize('NFD').replace(/[\u0300-\u036f]/g,
         <label for="asis-nota">Comentario <span>(opcional)</span></label>
         <textarea id="asis-nota" rows="2" maxlength="300" data-asis-nota></textarea>
       </div>
+      <div data-solo="plantas">
+        <p class="asis__ayuda">{condiciones.descuento}</p>
+        <p class="asis__ayuda">{condiciones.plantas}</p>
+      </div>
+      <p class="asis__ayuda" data-solo="pasadia">{condiciones.recorrido}</p>
     </section>
   </div>
 
@@ -307,7 +313,7 @@ const idDe = (s: string) => `pl-${s.normalize('NFD').replace(/[\u0300-\u036f]/g,
       } else {
         plantasElegidas().forEach((p) => add(`${p.especie}: ${p.cantidad}${p.tipo === 'nativo-consulta' ? ' · consultar disponibilidad' : ''}`));
       }
-      $$<HTMLElement>('[data-solo="plantas"]').forEach((el) => { el.hidden = modo !== 'plantas'; });
+      $$<HTMLElement>('[data-solo]').forEach((el) => { el.hidden = el.dataset.solo !== modo; });
     }
 
     function ir(n: number) {

@@ -1,7 +1,7 @@
 ---
 import Brand from './Brand.astro';
 import WhatsAppIcon from './WhatsAppIcon.astro';
-import { contacto, waLink, mensajesWa, impulsor } from '../data/sitio';
+import { contacto, waLink, mensajesWa, impulsor, organizacion } from '../data/sitio';
 const mensaje = mensajesWa.general;
 const enInicio = Astro.url.pathname === '/';
 ---
@@ -32,7 +32,7 @@ const enInicio = Astro.url.pathname === '/';
 
     <div class="footer__bottom">
       <Brand />
-      <p>© {new Date().getFullYear()} {contacto.nombre} · Proyecto comunitario de la vereda La Cañada, con el impulso de <a href={impulsor.facebook} target="_blank" rel="noopener">{impulsor.nombre}<span class="sr-only"> (abre en una pestaña nueva)</span></a>. Precios y disponibilidad sujetos a confirmación.</p>
+      <p>{organizacion}<br />© {new Date().getFullYear()} {contacto.nombre} · Proyecto comunitario de la vereda La Cañada, con el impulso de <a href={impulsor.facebook} target="_blank" rel="noopener">{impulsor.nombre}<span class="sr-only"> (abre en una pestaña nueva)</span></a>. Precios y disponibilidad sujetos a confirmación.</p>
       <a class="footer__arriba" href={enInicio ? '#inicio' : '/#inicio'}>Volver arriba ↑</a>
     </div>
   </div>

@@ -25,6 +25,8 @@ Vivimos en la zona de influencia de la hidroeléctrica El Quimbo y hemos visto c
 
 El vivero y el sendero se sostienen con el trabajo de varias familias y con decisiones tomadas en comunidad. La producción de plantas y los recorridos son una oportunidad para transmitir el conocimiento de quienes viven aquí.
 
+Con trabajo comunitario sembramos 400 árboles nativos, montamos un banco de semillas propio y formamos un equipo que monitorea la biodiversidad de la zona. Trabajamos sin intermediarios: cada persona trata directamente con quienes recolectan la semilla, cultivan las plantas y guían el recorrido.
+
 ## Dos maneras de encontrarnos
 
 ### Caminar el bosque
@@ -38,6 +40,8 @@ La experiencia comienza en el vivero comunitario. Desde allí caminamos el sende
 El vivero se dedica a la producción y venta de plántulas de árboles nativos y frutales. Las propagamos con semilla del territorio para que cada comprador pueda sembrarlas en su terreno. Entre las especies del catálogo están el guayacán, el samán, el guácimo y el gualanday, junto con frutales como el limón, la naranja y el madroño.
 
 Acompañamos la elección de las especies según el lugar de siembra, compartimos indicaciones para su cuidado y ofrecemos seguimiento después de la entrega. La disponibilidad de cada especie, el valor final y las condiciones de entrega se confirman al conversar con nosotros.
+
+Ofrecemos descuentos a partir de dos docenas (24 plántulas); el valor se acuerda por WhatsApp antes de pagar. El pedido se paga antes del despacho o se deja un depósito para separarlo, con el monto y las condiciones de entrega acordados con la comunidad.
 
 ## Lo que nos mueve
 
@@ -64,6 +68,8 @@ La conversación continúa en WhatsApp, donde confirmamos la disponibilidad y ac
 ## Hablemos
 
 **Estamos en la vereda La Cañada, municipio de El Agrado, Huila, Colombia.**
+
+Asociación de Trabajadores Campesinos del Huila — Subdirectiva El Agrado.
 
 - [WhatsApp: 312 337 3394](https://wa.me/573123373394)
 - [Correo: mccpgarzon@gmail.com](mailto:mccpgarzon@gmail.com)
